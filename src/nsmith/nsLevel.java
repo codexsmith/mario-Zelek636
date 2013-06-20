@@ -13,6 +13,7 @@ import dk.itu.mario.level.Level;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import nsmith.ElementOdds.ODDS_E;
 import nsmith.Elements.BuildZone;
 import nsmith.Elements.Cannon;
 import nsmith.Elements.Hill;
@@ -27,18 +28,8 @@ import nsmith.Elements.Tube;
 public class nsLevel extends Level implements GameBlock{ 
     
     Random random;
-    
-    
-    
-    protected static final int ODDS_STRAIGHT = 0;
-    protected static final int ODDS_HILL_STRAIGHT = 1;
-    protected static final int ODDS_TUBES = 2;
-    protected static final int ODDS_JUMP = 3;
-    protected static final int ODDS_CANNONS = 4;
-    protected static final int JumpingThreshold = 3;
-    
-    protected int[] odds = new int[5];
-    protected int totalOdds;
+     
+    ElementOdds oddsObj;
     
     protected int difficulty;
     protected int type;
@@ -109,6 +100,7 @@ public class nsLevel extends Level implements GameBlock{
     private nsLevel(int width, int height, long seed, int difficulty,int type, GamePlay playerMetrics) {
         super(width, height);
         this.playerN = playerMetrics;
+        oddsObj = new ElementOdds(playerN);
         creat(seed, difficulty, type);
     }
 
@@ -118,36 +110,22 @@ public class nsLevel extends Level implements GameBlock{
         
         this.type = type;
         this.difficulty = difficulty;
-        odds[ODDS_STRAIGHT] = 30;
-        odds[ODDS_HILL_STRAIGHT] = 20;
-        odds[ODDS_TUBES] = 2 + 2 * difficulty;
+        oddsObj.odds.put(ElementOdds.ODDS_E.STRAIGHT, 30);
+        oddsObj.odds.put(ElementOdds.ODDS_E.HILL_STRAIGHT, 20);
+        oddsObj.odds.put(ElementOdds.ODDS_E.TUBES, 2+2*difficulty);
         int jumpDifficulty = 1;
         // adapt the game so that it has a number of gaps proportional to the
         //number of jumps the player made in the test level. The more the jumps,
         //the more the gaps.
-        if (playerN.jumpsNumber > JumpingThreshold)
+        if (playerN.jumpsNumber > oddsObj.JumpingThreshold)
             jumpDifficulty = 2;
-        odds[ODDS_JUMP] =  jumpDifficulty;
-        odds[ODDS_CANNONS] = -10 + 5 * difficulty;
+        oddsObj.odds.put(ElementOdds.ODDS_E.JUMP, jumpDifficulty);;
+        oddsObj.odds.put(ElementOdds.ODDS_E.CANNONS, 10 + 5 * difficulty);
 
         if (type != LevelInterface.TYPE_OVERGROUND) {
-            odds[ODDS_HILL_STRAIGHT] = 0;
+            oddsObj.odds.put(ElementOdds.ODDS_E.HILL_STRAIGHT, 0);
         }
 
-        for (int i = 0; i < odds.length; i++) {
-            //failsafe (no negative odds)
-            if (odds[i] < 0) {
-                odds[i] = 0;
-            }
-
-            totalOdds += odds[i];
-//           odds[i] = totalOdds - odds[i]; -- totalOdds is not at the total yet
-//            moved below to a new loop
-        }
-
-        for(int i = 0; i < odds.length; i++){
-            odds[i] = totalOdds - odds[i];
-        }
         
         random = new Random(seed);
         int length = 0;
@@ -156,12 +134,11 @@ public class nsLevel extends Level implements GameBlock{
         //build map_blocks
         //can adjust difficulty of all blocks
         
-        GameBlock prefab = new BuildZone(this,length,getWidth(), difficulty);
+        BuildZone prefab = new BuildZone(this,length,getWidth(), difficulty);
         
-        prefab.
+        map_blocks.add(prefab.buildOpener());
         
-        Add(new Straight(this,0, getWidth(), difficulty));//START
-        length += map_blocks.get(0).Add(1);//SAFE start
+        length += map_blocks.get(0).getLength();//random SAFE start
         
         //create all middle sections      
         while(length < getWidth() - 64){
@@ -177,24 +154,9 @@ public class nsLevel extends Level implements GameBlock{
             length+= next.Add(param);
         }
         
+        prefab.buildEndExit();
         
-        
-        //set the end piece
-        int floor = height - 1 - random.nextInt(4);
-
-        //creat the exit
-        xExit = length + 8;
-        yExit = floor;
-
-        for (int x = length; x < getWidth(); x++) {
-            for (int y = 0; y < height; y++) {
-                if (y >= floor) {
-                    setBlock(x, y, Level.GROUND);
-                }
-            }
-        }
-        
-        //use this code to create the 2nd tier blocks?
+        //creates the ceiling in castles, underground
         if (type == LevelInterface.TYPE_CASTLE || type == LevelInterface.TYPE_UNDERGROUND) {
             int ceiling = 0;
             int run = 0;
@@ -228,21 +190,25 @@ public class nsLevel extends Level implements GameBlock{
         GameBlock next = null;
         //adjust by player preferences
         
-        int pick = random.nextInt(odds.length);
-        if(pick == 0){
-            next = new Jump(this, origin, length, difficult);
+        
+        int pick = random.nextInt(oddsObj.totalOdds);
+        if(pick < oddsObj.odds.get(ODDS_E.STRAIGHT)){
+                next = new Straight(this, origin, length, difficult);
         }
-        else if(pick == 1){
+        else if(pick < oddsObj.odds.get(ODDS_E.HILL_STRAIGHT)){
             next = new Hill(this, origin, length, difficult);
         }
-        else if(pick == 2){
+        else if(pick < oddsObj.odds.get(ODDS_E.TUBES)){
+                next = new Tube(this, origin, length, difficult);
+
+        }
+        else if(pick < oddsObj.odds.get(ODDS_E.JUMP)){
+                next = new Jump(this, origin, length, difficult);
+
+        }
+        else if(pick < oddsObj.odds.get(ODDS_E.CANNONS)){
             next = new Cannon(this, origin, length, difficult);
-        }
-        else if(pick == 3){
-            next = new Tube(this, origin, length, difficult);
-        }
-        else if(pick == 4){
-            next = new Straight(this, origin, length, difficult);
+
         }
         
         return next;
@@ -280,38 +246,6 @@ public class nsLevel extends Level implements GameBlock{
         return yExit;
     }
     
-    private int buildZone(int x, int maxLength) {
-        int t = random.nextInt(totalOdds);
-        int type = 0;
-
-        for (int i = 0; i < odds.length; i++) {
-            if(odds[ODDS_JUMP] <= t*2+30){
-            	type = ODDS_JUMP;
-            	break;
-        }
-        	if (odds[i] <= t) {
-                type = i;
-            }
-        }
-
-        switch (type) {
-        case ODDS_STRAIGHT:
-            return buildStraight(x, maxLength, false);
-        case ODDS_HILL_STRAIGHT:
-            return buildHillStraight(x, maxLength);
-        case ODDS_TUBES:
-            return buildTubes(x, maxLength);
-        case ODDS_JUMP:
-            if (gaps < Constraints.gaps)
-                return buildJump(x, maxLength);
-            else
-                return buildStraight(x, maxLength, false);
-        case ODDS_CANNONS:
-            return buildCannons(x, maxLength);
-        }
-        return 0;
-    }
-
     public int buildJump(int xo, int maxLength) {
         gaps++;
         //jl: jump length

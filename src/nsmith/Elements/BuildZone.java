@@ -4,14 +4,13 @@
  */
 package nsmith.Elements;
 
-import dk.itu.mario.level.Level;
 import java.util.ArrayList;
 import java.util.Random;
 import nsmith.GameBlock;
 import nsmith.nsLevel;
 
-/**
- *
+/**Used to 'build' a prefabricated or algorithmic level block
+ * look at BuildEndExit as an example
  * @author nix
  */
 public class BuildZone implements GameBlock{
@@ -31,6 +30,8 @@ public class BuildZone implements GameBlock{
         par = parent;
         zoneDifficulty = difficulty;
         types = new ArrayList<Integer>();
+        
+        types.add(0);//buildEndExit
     }
     
     /**Use this Add for hand-coded int[][] map mainpulation, see buildEndExit
@@ -46,14 +47,7 @@ public class BuildZone implements GameBlock{
         }
         return length;
     }
-    
-    public GameBlock AddBlock(int type){
-        if(type == 0){
-            return buildOpening();
-        }
-        return null;
-    }
-    
+        
     @Override
     public ArrayList<Integer> getTypes() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -89,8 +83,10 @@ public class BuildZone implements GameBlock{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public GameBlock buildOpening(){
-        return new Straight(this,0, nsLevel.LEVEL.getWidth(), nsLevel.LEVEL.getDifficulty());
+    public GameBlock buildOpener(){
+        GameBlock opener = new Straight(nsLevel.LEVEL,0, length, zoneDifficulty);
+        opener.Add(-1);//could change this int type to an enum?
+        return opener;
     }
     
     public int buildEndExit(){

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import nsmith.GameBlock;
 import nsmith.nsLevel;
 
-/**
+/**GameBlock element
  *
  * @author nix
  */

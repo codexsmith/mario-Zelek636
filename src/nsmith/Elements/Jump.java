@@ -7,7 +7,7 @@ package nsmith.Elements;
 import java.util.ArrayList;
 import nsmith.GameBlock;
 
-/**
+/**GameBlock element
  *
  * @author nix
  */

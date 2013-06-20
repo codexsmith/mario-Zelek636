@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import nsmith.GameBlock;
 import nsmith.nsLevel;
 
-/**
+/**GameBlock element
  *
  * @author nix
  */
@@ -17,6 +17,8 @@ public class Straight implements GameBlock{
     
     private GameBlock parentBlock; //context
     private int absPos, possibleLength, actualLength, blockDifficulty;
+
+
     ArrayList<Integer> types;
     
     /**
@@ -34,20 +36,22 @@ public class Straight implements GameBlock{
         
     }
     
-    
     @Override
     public int Add(int type) {
         if(type == 0){
             actualLength = nsLevel.LEVEL.buildStraight(absPos, possibleLength, false);
         }
-        else{
+        else if(type == 1){
             actualLength = nsLevel.LEVEL.buildStraight(absPos, possibleLength, true);
+        }
+        else if(type == -1){
+            actualLength = buildOpening();
         }
         return actualLength;
     }
-
-    public GameBlock buildOpening(){
-        return new Straight(this,0, nsLevel.LEVEL.getWidth(), nsLevel.LEVEL.getDifficulty());
+    //random safe/unsafe opening, can add type here to add more functionality
+    public int buildOpening(){
+        return nsLevel.LEVEL.buildStraight(0, nsLevel.LEVEL.getWidth(), random.nextInt(2) == 0 ? true : false);
     }
     
     @Override
@@ -84,8 +88,10 @@ public class Straight implements GameBlock{
         return blockDifficulty;
     }
     
-    
-    
+    public int getAbsPos() {
+        return absPos;
+    }
+   
     @Override
     public ArrayList<Integer> getTypes() {
         return types;

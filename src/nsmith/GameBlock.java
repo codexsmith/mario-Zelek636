@@ -13,6 +13,8 @@ import java.util.Random;
  */
 public interface GameBlock {
     
+    public static Random random = new Random();
+    
     public int Add(int type);
     
     public ArrayList<Integer> getTypes();

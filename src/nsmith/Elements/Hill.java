@@ -6,6 +6,7 @@ package nsmith.Elements;
 
 import java.util.ArrayList;
 import nsmith.GameBlock;
+import nsmith.nsLevel;
 
 /**GameBlock element
  *
@@ -24,11 +25,19 @@ public class Hill implements GameBlock{
         possibleLength = maxLength;
         blockDifficulty = difficulty;
         types = new ArrayList<Integer>();
+        
+        types.add(0);
+        
     }
     
     @Override
     public int Add(int type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        if(type == 0){
+            actualLength = nsLevel.LEVEL.buildHillStraight(absPos, possibleLength);
+        }
+        
+        return actualLength;
     }
 
     @Override

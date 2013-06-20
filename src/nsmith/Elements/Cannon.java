@@ -30,14 +30,18 @@ public class Cannon implements GameBlock{
         possibleLength = maxLength;
         blockDifficulty = difficulty;
         types = new ArrayList<Integer>();
+        
+        types.add(0);
     }
     
     @Override
     public int Add(int type) {
-        int t = type;//what kind of tube do you want to build?
-        //perhaps use type to artificially inflate the difficulty?
-        //would have to 'rewrite' nsLevel.buildTubes into this class.
-        return nsLevel.LEVEL.buildCannons(absPos, possibleLength);
+                
+        if(type == 0){
+            actualLength = nsLevel.LEVEL.buildCannons(absPos, possibleLength);
+        }
+        return actualLength;
+        
     }
 
     @Override

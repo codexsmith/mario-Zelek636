@@ -14,13 +14,15 @@ public class LevelGen extends CustomizedLevelGenerator{
     
     public LevelInterface generateLevel(GamePlay playerMetrics) {
         LevelInterface level;        
-        
-                if(nsLevel.createNsLevel(320,15,new Random().nextLong(),1,1,playerMetrics)){
+                long seed = new Random().nextLong();
+                if(nsLevel.createNsLevel(320,15,seed,1,1,playerMetrics)){
+                    nsLevel.LEVEL.creat(seed, 1, 1);
                     level = nsLevel.getLEVEL();
                 }
                 else{
-                    nsLevel.clearLEVEL();
-                    nsLevel.createNsLevel(320,15,new Random().nextLong(),1,1,playerMetrics);
+                    nsLevel.clearLEVEL(true);
+                    nsLevel.createNsLevel(320,15,seed,1,1,playerMetrics);
+                    nsLevel.LEVEL.creat(seed, 1,1);
                     level = nsLevel.getLEVEL();
                 }
 		

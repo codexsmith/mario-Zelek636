@@ -17,14 +17,22 @@ public class BuildZone implements GameBlock{
     
     private Random random = new Random();
     
-    private int length, absPos, zoneDifficulty;
+    private int possiblelength, absPos, zoneDifficulty, actualLength = 0;
     private ArrayList<GameBlock> components;
     private GameBlock par;
     ArrayList<Integer> types;
 
+    public BuildZone(){
+        possiblelength = 0;
+        absPos = 0;
+        par = null;
+        zoneDifficulty = 0;
+        actualLength = 0;
+        
+    }
     
     public BuildZone(GameBlock parent, int origX, int maxLength, int difficulty){
-        length = maxLength;
+        possiblelength = maxLength;
         absPos = origX;
         components = new ArrayList<GameBlock>();   
         par = parent;
@@ -41,21 +49,20 @@ public class BuildZone implements GameBlock{
      */
     @Override
     public int Add(int type) {
-        int length  = 0;
         if(type == 0){
-            length = buildEndExit();
+            actualLength = buildEndExit();
         }
-        return length;
+        return actualLength;
     }
         
     @Override
     public ArrayList<Integer> getTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return types;
     }
 
     @Override
     public Class identifyBlock(int type) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.getClass();
     }
 
     @Override
@@ -70,7 +77,7 @@ public class BuildZone implements GameBlock{
 
     @Override
     public int getLength() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return actualLength;
     }
 
     @Override
@@ -84,7 +91,7 @@ public class BuildZone implements GameBlock{
     }
     
     public GameBlock buildOpener(){
-        GameBlock opener = new Straight(nsLevel.LEVEL,0, length, zoneDifficulty);
+        GameBlock opener = new Straight(nsLevel.LEVEL,0, possiblelength, zoneDifficulty);
         opener.Add(-1);//could change this int type to an enum?
         return opener;
     }

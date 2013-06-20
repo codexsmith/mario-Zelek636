@@ -32,13 +32,17 @@ public class Tube implements GameBlock {
         possibleLength = maxLength;
         types = new ArrayList<Integer>();
         blockDifficulty = difficult;
+        
+        types.add(0);
     }
     
-    public int Add(int param) {
-        int t = param;//what kind of tube do you want to build?
+    public int Add(int type) {
         //perhaps use type to artificially inflate the difficulty?
         //would have to 'rewrite' nsLevel.buildTubes into this class.
-        actualLength = nsLevel.LEVEL.buildTubes(absPos, possibleLength);
+        if(type == 0){
+            actualLength = nsLevel.LEVEL.buildTubes(absPos, possibleLength);
+        }
+        
         return actualLength;
     }
 

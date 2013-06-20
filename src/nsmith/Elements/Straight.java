@@ -34,6 +34,10 @@ public class Straight implements GameBlock{
         blockDifficulty = difficulty;
         types = new ArrayList<Integer>();
         
+        types.add(-1);
+        types.add(0);
+        types.add(1);
+        
     }
     
     @Override

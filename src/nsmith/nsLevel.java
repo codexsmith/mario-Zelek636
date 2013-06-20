@@ -41,7 +41,7 @@ public class nsLevel extends Level implements GameBlock{
     
     protected GamePlay playerN;
     
-    private ArrayList<GameBlock> map_blocks = new ArrayList<GameBlock>();
+    private ArrayList<GameBlock> map_blocks;
     
     public static nsLevel LEVEL = null;//singleton
     
@@ -55,8 +55,14 @@ public class nsLevel extends Level implements GameBlock{
         }
     }
     
-    public static void clearLEVEL(){
-        LEVEL = null;
+    /**Just to be sure you MUST pass TRUE as the parameter
+     * 
+     * @param yesOrNo 
+     */
+    public static void clearLEVEL(boolean yesOrNo){
+        if(yesOrNo){
+            LEVEL = null;
+        }
     } 
    
     public static nsLevel getLEVEL(){
@@ -106,9 +112,10 @@ public class nsLevel extends Level implements GameBlock{
             System.out.println("nsLevel");
               }
         
+        map_blocks = new ArrayList<GameBlock>();
+        
         this.playerN = playerMetrics;
         oddsObj = new ElementOdds(playerN);
-        creat(seed, difficulty, type);
     }
 
     public void creat(long seed, int difficulty, int type) {
@@ -152,7 +159,9 @@ public class nsLevel extends Level implements GameBlock{
             //choose next block and it's difficulty
             int nextDiff = decideBlockDifficulty();
             GameBlock next = decideBlock(length,getWidth()-length, nextDiff);
-            
+            if(next == null){
+                continue;
+            }
             int param = decideType(next);
             
             //add to block map, check for playability in here
@@ -188,32 +197,37 @@ public class nsLevel extends Level implements GameBlock{
         //return random type
         //do something with difficulty... have higher type ## correspond to more difficult
         //build specs
-        int ty = bl.getTypes().get(random.nextInt(bl.getTypes().size()));
+        int ty = 0;
+        
+        if(bl != null && bl.getTypes() != null){
+
+            ty = bl.getTypes().get(random.nextInt(bl.getTypes().size()));
+        }
         
         return ty;
     }
     
     public GameBlock decideBlock(int origin, int length, int difficult){
-        GameBlock next = null;
+        GameBlock next = new BuildZone();
         //adjust by player preferences
+                
+        int pick = random.nextInt(oddsObj.totalOdds)+1;
         
-        
-        int pick = random.nextInt(oddsObj.totalOdds);
-        if(pick < oddsObj.odds.get(ODDS_E.STRAIGHT)){
+        if(pick < oddsObj.bounds.get(ODDS_E.STRAIGHT)){
                 next = new Straight(this, origin, length, difficult);
         }
-        else if(pick < oddsObj.odds.get(ODDS_E.HILL_STRAIGHT)){
+        else if(pick < oddsObj.bounds.get(ODDS_E.HILL_STRAIGHT)){
             next = new Hill(this, origin, length, difficult);
         }
-        else if(pick < oddsObj.odds.get(ODDS_E.TUBES)){
+        else if(pick < oddsObj.bounds.get(ODDS_E.TUBES)){
                 next = new Tube(this, origin, length, difficult);
 
         }
-        else if(pick < oddsObj.odds.get(ODDS_E.JUMP)){
+        else if(pick < oddsObj.bounds.get(ODDS_E.JUMP)){
                 next = new Jump(this, origin, length, difficult);
 
         }
-        else if(pick < oddsObj.odds.get(ODDS_E.CANNONS)){
+        else if(pick < oddsObj.bounds.get(ODDS_E.CANNONS)){
             next = new Cannon(this, origin, length, difficult);
 
         }

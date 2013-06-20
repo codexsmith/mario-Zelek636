@@ -6,6 +6,7 @@ package nsmith.Elements;
 
 import java.util.ArrayList;
 import nsmith.GameBlock;
+import nsmith.nsLevel;
 
 /**GameBlock element
  *
@@ -24,12 +25,17 @@ public class Jump implements GameBlock{
         possibleLength = maxLength;
         blockDifficulty = difficulty;
         types = new ArrayList<Integer>();
+        
+        types.add(0);
+        
     } 
      
     @Override
     public int Add(int type) {
-        
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if(type == 0){
+            actualLength = nsLevel.LEVEL.buildJump(absPos, possibleLength);
+        }
+        return actualLength;
     }
 
     @Override
@@ -65,9 +71,7 @@ public class Jump implements GameBlock{
     public int getDifficulty() {
         return blockDifficulty;
     }
-    
-       
-    
+        
     @Override
     public ArrayList<Integer> getTypes() {
         return types;

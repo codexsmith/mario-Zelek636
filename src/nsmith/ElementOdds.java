@@ -41,21 +41,26 @@ public class ElementOdds {
     public ElementOdds(GamePlay playerMetric){
         bounds = new HashMap<ODDS_E, Integer>();
         odds = new HashMap<ODDS_E, Integer>();
+        
+        odds.put(ODDS_E.JUMP, 100);
+        odds.put(ODDS_E.STRAIGHT, 100);
+        odds.put(ODDS_E.HILL_STRAIGHT, 100);
+        odds.put(ODDS_E.CANNONS, 100);
+        odds.put(ODDS_E.TUBES, 100);
+        
+        sanityAndStats();
     }
     
     public void sanityAndStats(){
-        int i  = 0;
+        
         for (Map.Entry<ODDS_E, Integer> val : odds.entrySet()){
             //failsafe (no negative odds)
             if (val.getValue() < 0) {
                 val.setValue(0);
             }
 
-            totalOdds += odds.get(val.getKey());
-            i++;
-            
+           totalOdds += odds.get(val.getKey());
            bounds.put(val.getKey(), totalOdds - val.getValue());
-
         }
 //COULD Normalize, but we don't have to, and current logic in nsLevel is set up
 //  for no normalization

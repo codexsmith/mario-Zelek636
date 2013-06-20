@@ -30,6 +30,7 @@ import dk.itu.mario.level.generator.MyLevelGenerator;
 import dk.itu.mario.level.MyLevel;
 import dk.itu.mario.engine.Play;
 import dk.itu.mario.res.ResourcesManager;
+import nsmith.LevelGen;
 
 	public class LevelSceneTest extends LevelScene{
 
@@ -59,7 +60,7 @@ import dk.itu.mario.res.ResourcesManager;
 
 		        if(level==null)
 		        	if(isCustom){
-		        		MyLevelGenerator clg = new MyLevelGenerator();
+		        		LevelGen clg = new LevelGen();
 		        		GamePlay gp = new GamePlay();
 		        		gp = gp.read("player.txt");
 		        		currentLevel = (Level)clg.generateLevel(gp);

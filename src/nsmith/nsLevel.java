@@ -28,7 +28,9 @@ import nsmith.Elements.Tube;
 public class nsLevel extends Level implements GameBlock{ 
     
     Random random;
-     
+    
+    public static boolean DEBUG = true;
+    
     ElementOdds oddsObj;
     
     protected int difficulty;
@@ -99,6 +101,11 @@ public class nsLevel extends Level implements GameBlock{
     
     private nsLevel(int width, int height, long seed, int difficulty,int type, GamePlay playerMetrics) {
         super(width, height);
+        
+        if(DEBUG){
+            System.out.println("nsLevel");
+              }
+        
         this.playerN = playerMetrics;
         oddsObj = new ElementOdds(playerN);
         creat(seed, difficulty, type);

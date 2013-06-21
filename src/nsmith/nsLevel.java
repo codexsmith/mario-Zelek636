@@ -119,9 +119,7 @@ public class nsLevel extends Level implements GameBlock{
     }
 
     public void creat(long seed, int difficulty, int type) {
-        
         //
-        
         this.type = type;
         this.difficulty = difficulty;
         oddsObj.odds.put(ElementOdds.ODDS_E.STRAIGHT, 30);
@@ -170,7 +168,7 @@ public class nsLevel extends Level implements GameBlock{
             length+= next.Add(param);
         }
         
-        prefab.buildEndExit();
+        prefab.buildEndExit(length);
         
         //creates the ceiling in castles, underground
         if (type == LevelInterface.TYPE_CASTLE || type == LevelInterface.TYPE_UNDERGROUND) {
@@ -209,9 +207,8 @@ public class nsLevel extends Level implements GameBlock{
     
     public GameBlock decideBlock(int origin, int length, int difficult){
         GameBlock next = new BuildZone();
-        //adjust by player preferences
                 
-        int pick = random.nextInt(oddsObj.totalOdds)+1;
+        int pick = random.nextInt(oddsObj.totalOdds);
         
         if(pick < oddsObj.bounds.get(ODDS_E.STRAIGHT)){
                 next = new Straight(this, origin, length, difficult);
@@ -683,6 +680,7 @@ public class nsLevel extends Level implements GameBlock{
      * @param bl 
      */
     public void Add(GameBlock bl){
+        if(DEBUG){System.out.println("Added Block "+ bl.toString());}
         map_blocks.add(map_blocks.size()-1,bl); 
     }
     

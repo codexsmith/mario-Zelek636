@@ -42,11 +42,13 @@ public class ElementOdds {
         bounds = new HashMap<ODDS_E, Integer>();
         odds = new HashMap<ODDS_E, Integer>();
         
-        odds.put(ODDS_E.JUMP, 100);
-        odds.put(ODDS_E.STRAIGHT, 100);
-        odds.put(ODDS_E.HILL_STRAIGHT, 100);
-        odds.put(ODDS_E.CANNONS, 100);
-        odds.put(ODDS_E.TUBES, 100);
+        odds.put(ODDS_E.JUMP, 10);
+        odds.put(ODDS_E.STRAIGHT, 10);
+        odds.put(ODDS_E.HILL_STRAIGHT, 10);
+        odds.put(ODDS_E.CANNONS, 10);
+        odds.put(ODDS_E.TUBES, 10);
+        
+        totalOdds = 0;
         
         sanityAndStats();
     }
@@ -59,8 +61,8 @@ public class ElementOdds {
                 val.setValue(0);
             }
 
-           totalOdds += odds.get(val.getKey());
-           bounds.put(val.getKey(), totalOdds - val.getValue());
+           totalOdds += val.getValue();
+           bounds.put(val.getKey(), totalOdds);
         }
 //COULD Normalize, but we don't have to, and current logic in nsLevel is set up
 //  for no normalization

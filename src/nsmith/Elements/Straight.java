@@ -34,8 +34,7 @@ public class Straight implements GameBlock{
         blockDifficulty = difficulty;
         types = new ArrayList<Integer>();
         
-        types.add(-1);
-        types.add(0);
+         types.add(0);
         types.add(1);
         
     }
@@ -48,9 +47,7 @@ public class Straight implements GameBlock{
         else if(type == 1){
             actualLength = nsLevel.LEVEL.buildStraight(absPos, possibleLength, true);
         }
-        else if(type == -1){
-            actualLength = buildOpening();
-        }
+      
         return actualLength;
     }
     //random safe/unsafe opening, can add type here to add more functionality

@@ -50,7 +50,7 @@ public class BuildZone implements GameBlock{
     @Override
     public int Add(int type) {
         if(type == 0){
-            actualLength = buildEndExit();
+            actualLength = buildEndExit(absPos);
         }
         return actualLength;
     }
@@ -90,15 +90,15 @@ public class BuildZone implements GameBlock{
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-    public GameBlock buildOpener(){
-        GameBlock opener = new Straight(nsLevel.LEVEL,0, possiblelength, zoneDifficulty);
-        opener.Add(-1);//could change this int type to an enum?
+    public Straight buildOpener(){
+        Straight opener = new Straight(nsLevel.LEVEL,0, possiblelength, zoneDifficulty);
+        opener.buildOpening();//could change this int type to an enum?
         return opener;
     }
     
-    public int buildEndExit(){
+    public int buildEndExit(int len){
         //set the end piece
-        int length = 0;
+        int length = len;
         int floor = nsLevel.LEVEL.getHeight() - 1 - random.nextInt(4);
 
         //creat the exit

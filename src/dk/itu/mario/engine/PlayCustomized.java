@@ -3,6 +3,7 @@ package dk.itu.mario.engine;
 import java.awt.*;
 
 import javax.swing.*;
+import nsmith.randomMarioComponent;
 
 public class PlayCustomized {
 

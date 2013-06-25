@@ -10,6 +10,7 @@ import dk.itu.mario.MarioInterface.LevelInterface;
 import dk.itu.mario.engine.sprites.Enemy;
 import dk.itu.mario.engine.sprites.SpriteTemplate;
 import dk.itu.mario.level.Level;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -33,15 +34,20 @@ public class nsLevel extends Level implements GameBlock{
     
     ElementOdds oddsObj;
     
+    protected ArrayList<Integer> difficulty_history = new ArrayList<Integer>();
+    
     protected int difficulty;
     protected int type;
     protected int gaps;
     protected int turtles;
     protected int coins;
     
+    protected long seed;
+    
     protected GamePlay playerN;
     
     private ArrayList<GameBlock> map_blocks;
+    
     
     public static nsLevel LEVEL = null;//singleton
     
@@ -68,6 +74,7 @@ public class nsLevel extends Level implements GameBlock{
     public static nsLevel getLEVEL(){
         return LEVEL;
     }
+    
     
     public ArrayList<GameBlock> getBlockMap(){
         return map_blocks;
@@ -105,7 +112,7 @@ public class nsLevel extends Level implements GameBlock{
         return slice;
     }
     
-    private nsLevel(int width, int height, long seed, int difficulty,int type, GamePlay playerMetrics) {
+    private nsLevel(int width, int height, long seed, int difficulty, int type, GamePlay playerMetrics) {
         super(width, height);
         
         if(DEBUG){
@@ -114,14 +121,19 @@ public class nsLevel extends Level implements GameBlock{
         
         map_blocks = new ArrayList<GameBlock>();
         
+        this.seed = seed;
+        this.difficulty = difficulty;
+        this.difficulty_history.add(difficulty);
+        
+        this.type = type;
+        
         this.playerN = playerMetrics;
         oddsObj = new ElementOdds(playerN);
     }
 
-    public void creat(long seed, int difficulty, int type) {
+    public void creat() {
         //
-        this.type = type;
-        this.difficulty = difficulty;
+
         oddsObj.odds.put(ElementOdds.ODDS_E.STRAIGHT, 30);
         oddsObj.odds.put(ElementOdds.ODDS_E.HILL_STRAIGHT, 20);
         oddsObj.odds.put(ElementOdds.ODDS_E.TUBES, 2+2*difficulty);
@@ -198,7 +210,7 @@ public class nsLevel extends Level implements GameBlock{
         int ty = 0;
         
         if(bl != null && bl.getTypes() != null){
-
+            
             ty = bl.getTypes().get(random.nextInt(bl.getTypes().size()));
         }
         
@@ -234,6 +246,9 @@ public class nsLevel extends Level implements GameBlock{
     
     public int decideBlockDifficulty(){
         int diff = difficulty;
+        
+        
+        
         //adjust for player preferences
         return diff;
     }
@@ -241,7 +256,13 @@ public class nsLevel extends Level implements GameBlock{
         return difficulty;
     }
     public void setDifficulty(int set){
+        difficulty_history.add(set);
+        
         difficulty = set;
+    }
+    
+   public ArrayList<Integer> getDifficultyHistory(){
+        return difficulty_history;
     }
     
     public byte getGround(){

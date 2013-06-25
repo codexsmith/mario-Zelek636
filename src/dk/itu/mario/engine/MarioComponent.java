@@ -28,6 +28,7 @@ import dk.itu.mario.scene.WinScene;
 import dk.itu.mario.engine.sonar.FakeSoundEngine;
 import dk.itu.mario.engine.sonar.SonarSoundEngine;
 import dk.itu.mario.engine.sprites.Mario;
+import nsmith.bzLevelTest;
 
 public class MarioComponent extends JComponent implements Runnable, KeyListener, FocusListener, MouseListener
 	{
@@ -335,7 +336,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
 		    public void toCustomGame(){
 
-		    	randomLevel = new LevelSceneTest(graphicsConfiguration,this,new Random().nextLong(),0,0,true);
+		    	randomLevel = new bzLevelTest(graphicsConfiguration,this,new Random().nextLong(),0,0,true);
 
 		    	Mario.fire = false;
 		    	Mario.large = false;

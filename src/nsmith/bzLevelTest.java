@@ -1,13 +1,12 @@
-package dk.itu.mario.scene;
-import java.awt.GraphicsConfiguration;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
-
-
-import dk.itu.mario.level.BgLevelGenerator;
+package nsmith;
 import dk.itu.mario.MarioInterface.GamePlay;
+import dk.itu.mario.engine.Art;
+import dk.itu.mario.engine.BgRenderer;
+import dk.itu.mario.engine.DataRecorder;
+import dk.itu.mario.engine.LevelRenderer;
+import java.awt.GraphicsConfiguration;
+import java.util.ArrayList;
+import dk.itu.mario.engine.MarioComponent;
 import dk.itu.mario.engine.sonar.FixedSoundSource;
 import dk.itu.mario.engine.sprites.CoinAnim;
 import dk.itu.mario.engine.sprites.FireFlower;
@@ -16,23 +15,19 @@ import dk.itu.mario.engine.sprites.Mushroom;
 import dk.itu.mario.engine.sprites.Particle;
 import dk.itu.mario.engine.sprites.Sprite;
 import dk.itu.mario.engine.util.FileHandler;
-
-import dk.itu.mario.engine.Art;
-import dk.itu.mario.engine.BgRenderer;
-import dk.itu.mario.engine.DataRecorder;
-import dk.itu.mario.engine.LevelRenderer;
-import dk.itu.mario.engine.MarioComponent;
-import dk.itu.mario.level.CustomizedLevel;
+import dk.itu.mario.level.BgLevelGenerator;
 import dk.itu.mario.level.Level;
 import dk.itu.mario.level.RandomLevel;
-import dk.itu.mario.level.generator.CustomizedLevelGenerator;
-import dk.itu.mario.level.generator.MyLevelGenerator;
-import dk.itu.mario.level.MyLevel;
-import dk.itu.mario.engine.Play;
 import dk.itu.mario.res.ResourcesManager;
-import nsmith.LevelGen;
+import static dk.itu.mario.scene.LevelScene.recorder;
+import dk.itu.mario.scene.LevelSceneTest;
+import static dk.itu.mario.scene.Scene.keys;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.util.Random;
 
-	public class LevelSceneTest extends LevelScene{
+
+	public class bzLevelTest extends LevelSceneTest{
 
 			ArrayList<Double> switchPoints;
 			private double thresshold; //how large the distance from point to mario should be before switching
@@ -41,9 +36,9 @@ import nsmith.LevelGen;
 			private boolean isCustom;
                         LevelGen clg;
 
-			public LevelSceneTest(GraphicsConfiguration graphicsConfiguration,
+			public bzLevelTest(GraphicsConfiguration graphicsConfiguration,
 					MarioComponent renderer, long seed, int levelDifficulty, int type,boolean isCustom){
-				super(graphicsConfiguration,renderer,seed,levelDifficulty,type);
+				super(graphicsConfiguration,renderer,seed,levelDifficulty,type,isCustom);
 				this.isCustom = isCustom;
 			}
 
@@ -148,6 +143,9 @@ import nsmith.LevelGen;
 				if(Mario.lives <=0){//has no more lives
 					if(recorder != null)
 					recorder.fillGamePlayMetrics((RandomLevel)level);
+                                        
+                                        clg.surveyFeedBack();
+                                        
 					marioComponent.lose();
 				}
 				else // mario still has lives to play :)--> have a new beginning
@@ -248,7 +246,5 @@ import nsmith.LevelGen;
 			private float toReal(int b){
 				return b*16;
 			}
-
-
-
 }
+

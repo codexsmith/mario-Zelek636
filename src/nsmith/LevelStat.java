@@ -18,6 +18,7 @@ import java.util.Random;
 public class LevelStat {
     private ArrayList<Long> keys;
     private ArrayList<ArrayList<Integer>> stats;    
+    private int prevLength = 0;
     
     public LevelStat(){
        keys = new ArrayList<Long>();
@@ -25,7 +26,17 @@ public class LevelStat {
               
     }
     
+    public int getCurrentLength(){
+        return keys.size();
+    }
+    
+    public int getPrevLength(){
+        return prevLength;
+    }
+    
     public String[] toFileString(){
+        prevLength = keys.size();
+        
         String[] out = new String[keys.size()];
         String temp;
         
@@ -37,7 +48,6 @@ public class LevelStat {
             for(Integer i_i : x){
                 temp = temp + " " + i_i.toString();
             }
-            
             
             out[i] = temp;
         }
@@ -89,6 +99,7 @@ public class LevelStat {
     public void addEntry(Long test, ArrayList<Integer> val){
         keys.add(test);
         stats.add(val);
+                
     }
     
     public HashMap<Integer, ArrayList<Integer>> getMapKey(Long test){

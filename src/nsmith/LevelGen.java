@@ -30,7 +30,7 @@ public class LevelGen extends CustomizedLevelGenerator {
     
     LevelInterface level;
     FileReader file = null;
-    LevelStat seedLabels;//<Long, ArrayList<ArrayList<Integer>>>
+    LevelStat seedLabels;
     int setLength;
     long seed;
     
@@ -105,36 +105,28 @@ public class LevelGen extends CustomizedLevelGenerator {
     }
     
     private void writeLabel(){
-//        if(seedLabels.size() > setLength){
-//            try{
-//
-//                PrintWriter out = new PrintWriter("src/nsmith/seedDataSet.txt");
-//                
-//                for(Map.Entry<Long, ArrayList<ArrayList<Integer>>> entry : seedLabels.entrySet()){
-//                    for(ArrayList<Integer> a_i : entry.getValue()){
-//                       String line = entry.getKey().toString();
-//                       for(Integer i_i : a_i){
-//                           line = line + " " + i_i.toString();
-//                       }
-////                       out.append(line);
-//                       out.println(line); 
-//                    }
-//                }
-//                out.flush();
-//                out.close();
-//            }
-//            catch(Exception e){
-//
-//            }
-//        }
+        if(seedLabels.getPrevLength() < seedLabels.getCurrentLength()){
+            try{
+
+                PrintWriter out = new PrintWriter("src/nsmith/seedDataSet.txt");
+                
+                for(String st : seedLabels.toFileString()){
+                    if(nsLevel.DEBUG){
+                        System.out.println(st);
+                    }
+                       out.println(st);
+                }
+                
+                out.flush();
+                out.close();
+            }
+            catch(Exception e){
+
+            }
+        }
     }
     
     public void surveyFeedBack() {
-        ArrayList<ArrayList<Integer>> preExist = new ArrayList<ArrayList<Integer>>();
-        
-        if(seedLabels.hasKey(seed)){
-//            preExist = seedLabels.getValue(seed);
-        }
         
         ArrayList<Integer> val = new ArrayList<Integer>();
         
@@ -159,9 +151,7 @@ public class LevelGen extends CustomizedLevelGenerator {
         val.add(AIUtils.math_geom_avg(nsLevel.getLEVEL().getDifficultyHistory()));
         val.add(AIUtils.std_dev(nsLevel.getLEVEL().getDifficultyHistory()));
         
-        preExist.add(val);
-        
-//       seedLabels.put(seed, preExist);
+       seedLabels.addEntry(seed, val);
        
        writeLabel();
     }

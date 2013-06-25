@@ -10,6 +10,7 @@ import dk.itu.mario.MarioInterface.LevelInterface;
 import dk.itu.mario.engine.sprites.Enemy;
 import dk.itu.mario.engine.sprites.SpriteTemplate;
 import dk.itu.mario.level.Level;
+import dk.itu.mario.level.RandomLevel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +22,7 @@ import nsmith.Elements.*;
  *
  * @author Nicholas Smith
  */
-public class nsLevel extends Level implements GameBlock{ 
+public class nsLevel extends RandomLevel implements GameBlock{ 
     
     Random random;
     

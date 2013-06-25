@@ -134,7 +134,7 @@ import java.util.Random;
 				if(recorder != null)
 				recorder.fillGamePlayMetrics((RandomLevel)level);
 				
-                                clg.surveyFeedBack();
+//                                clg.surveyFeedBack();
                                                                 
                                 marioComponent.win();
 			}
@@ -144,7 +144,7 @@ import java.util.Random;
 					if(recorder != null)
 					recorder.fillGamePlayMetrics((RandomLevel)level);
                                         
-                                        clg.surveyFeedBack();
+//                                        clg.surveyFeedBack();
                                         
 					marioComponent.lose();
 				}

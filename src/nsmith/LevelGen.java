@@ -2,7 +2,6 @@ package nsmith;
 
 import dk.itu.mario.MarioInterface.GamePlay;
 import dk.itu.mario.MarioInterface.LevelInterface;
-import dk.itu.mario.level.CustomizedLevel;
 import dk.itu.mario.level.generator.CustomizedLevelGenerator;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -28,14 +27,16 @@ import javax.swing.JOptionPane;
  */
 public class LevelGen extends CustomizedLevelGenerator {
     
+    
+    LevelInterface level;
     FileReader file = null;
-    HashMap<Long, ArrayList<ArrayList<Integer>>> seedLabels;
+    LevelStat seedLabels;//<Long, ArrayList<ArrayList<Integer>>>
     int setLength;
     long seed;
     
     public LevelGen() {
         
-        seedLabels = new HashMap<Long, ArrayList<ArrayList<Integer>>>(); 
+        seedLabels = new LevelStat(); 
         
         try {
             this.file = new FileReader("src/nsmith/seedDataSet.txt");
@@ -44,10 +45,10 @@ public class LevelGen extends CustomizedLevelGenerator {
         }
     }
     
+    @Override
     public LevelInterface generateLevel(GamePlay playerMetrics) {
-        LevelInterface level;
         
-        readLabeledSet();
+//        readLabeledSet();
         
         seed = new Random().nextLong();
         
@@ -62,10 +63,6 @@ public class LevelGen extends CustomizedLevelGenerator {
 
         }
         
-//        surveyFeedBack();
-            
-//        writeLabel();
-        
         return level;
     }
     
@@ -75,7 +72,7 @@ public class LevelGen extends CustomizedLevelGenerator {
             String line = null;
             String[] lineIn;
             int dataNo = 0;
-            ArrayList<ArrayList<Integer>> entryRow = new ArrayList<ArrayList<Integer>>();
+            ArrayList<Integer> entryRow = new ArrayList<Integer>();
             ArrayList<Integer> labels = new ArrayList<Integer>();
             try {
                 
@@ -84,16 +81,18 @@ public class LevelGen extends CustomizedLevelGenerator {
                     
                     lineIn = line.split(" ");
                     
-                    if(seedLabels.containsKey(Long.decode(lineIn[0]))){
-                        entryRow = seedLabels.get(Long.decode(lineIn[0]));
+                    if(seedLabels.hasKey(Long.decode(lineIn[0]))){
+                        entryRow = seedLabels.getValue(seedLabels.getIndex(seed, true));
                     }
                     
                     for(int i = 1; i < lineIn.length; i++){   
                         labels.add(Integer.decode(lineIn[i]));
                     }
-                    entryRow.add(labels);
                     
-                    seedLabels.put(Long.decode(lineIn[0]), entryRow );
+                    
+//                    entryRow.add(labels);
+                    
+                    seedLabels.addEntry(Long.decode(lineIn[0]), entryRow );
                         
                 }
                 
@@ -102,37 +101,39 @@ public class LevelGen extends CustomizedLevelGenerator {
             catch (IOException ex) {
                 Logger.getLogger(LevelGen.class.getName()).log(Level.SEVERE, null, ex);
             }
-           setLength = seedLabels.size();
+           
     }
     
     private void writeLabel(){
-        if(seedLabels.size() > setLength){
-            try{
-
-                PrintWriter out = new PrintWriter("src/nsmith/seedDataSet.txt");
-                
-                for(Map.Entry<Long, ArrayList<ArrayList<Integer>>> entry : seedLabels.entrySet()){
-                    for(ArrayList<Integer> a_i : entry.getValue()){
-                       String line = entry.getKey().toString();
-                       for(Integer i_i : a_i){
-                           line = line + " " + i_i.toString();
-                       }
-                       out.println(line); 
-                    }
-                }
-                out.close();
-            }
-            catch(Exception e){
-
-            }
-        }
+//        if(seedLabels.size() > setLength){
+//            try{
+//
+//                PrintWriter out = new PrintWriter("src/nsmith/seedDataSet.txt");
+//                
+//                for(Map.Entry<Long, ArrayList<ArrayList<Integer>>> entry : seedLabels.entrySet()){
+//                    for(ArrayList<Integer> a_i : entry.getValue()){
+//                       String line = entry.getKey().toString();
+//                       for(Integer i_i : a_i){
+//                           line = line + " " + i_i.toString();
+//                       }
+////                       out.append(line);
+//                       out.println(line); 
+//                    }
+//                }
+//                out.flush();
+//                out.close();
+//            }
+//            catch(Exception e){
+//
+//            }
+//        }
     }
     
     public void surveyFeedBack() {
         ArrayList<ArrayList<Integer>> preExist = new ArrayList<ArrayList<Integer>>();
         
-        if(seedLabels.containsKey(seed)){
-            preExist = seedLabels.get(seed);
+        if(seedLabels.hasKey(seed)){
+//            preExist = seedLabels.getValue(seed);
         }
         
         ArrayList<Integer> val = new ArrayList<Integer>();
@@ -160,7 +161,7 @@ public class LevelGen extends CustomizedLevelGenerator {
         
         preExist.add(val);
         
-       seedLabels.put(seed, preExist);
+//       seedLabels.put(seed, preExist);
        
        writeLabel();
     }

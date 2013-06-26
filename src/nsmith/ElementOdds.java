@@ -39,54 +39,88 @@ public class ElementOdds {
         bounds = new HashMap<ODDS_E, Integer>();
         odds = new HashMap<ODDS_E, Integer>();
 
-        odds.put(ODDS_E.JUMP, 4);
-        odds.put(ODDS_E.STRAIGHT, 6);
-        odds.put(ODDS_E.HILL_STRAIGHT, 6);
-        odds.put(ODDS_E.CANNONS, 5);
-        odds.put(ODDS_E.TUBES, 3);
-        odds.put(ODDS_E.CANNON_ARRAY, 2);
-        odds.put(ODDS_E.CAVE, 2);
-     
-        totalOdds = 0;
-
+        odds.put(ODDS_E.JUMP, new Integer(4));
+        odds.put(ODDS_E.STRAIGHT, new Integer(7));
+        odds.put(ODDS_E.HILL_STRAIGHT, new Integer(7));
+        odds.put(ODDS_E.CANNONS, new Integer(3));
+        odds.put(ODDS_E.TUBES, new Integer(4));
+        odds.put(ODDS_E.CANNON_ARRAY, new Integer(2));
+        odds.put(ODDS_E.CAVE, new Integer(2));
+        
+        for(Integer i : odds.values()){
+            totalOdds+=i;
+        }
+        
+        if(nsLevel.DEBUG){
+            stringOut();
+        }
+        
         sanityAndStats();
     }
-
+    
+    public void stringOut(){
+         System.out.println("ODDS");
+        for(Map.Entry<ODDS_E, Integer> b_i : bounds.entrySet()){
+             System.out.println(b_i.getKey().toString() + " " + b_i.getValue());
+        }
+       
+    }
+    
     public void scaleOdds(int maxDifficulty) {
         
         float scaleA = totalOdds/10;
         int scale = (int) ((int) maxDifficulty * scaleA);
+        int next;
+        
         
         for(Map.Entry<ODDS_E, Integer> i : odds.entrySet()){
             switch(i.getKey()){
-                case CANNONS:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                case CANNONS:next = odds.get(i.getKey()) * scale;
+                    odds.put(i.getKey(),next);
                     break;
-                case CANNON_ARRAY:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                case CANNON_ARRAY:next = odds.get(i.getKey()) * scale;
+                    odds.put(i.getKey(),next);
                     break;
-                case CAVE:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                case CAVE:next = odds.get(i.getKey()) * scale;
+                    odds.put(i.getKey(),next);
                     break;
-                case HILL_STRAIGHT:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                case HILL_STRAIGHT:next = odds.get(i.getKey()) * scale;
+                    odds.put(i.getKey(),next);
                     break;
-                case JUMP: odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                case JUMP: next = odds.get(i.getKey()) * scale;
+                    odds.put(i.getKey(),next);
                     break;
-                case STRAIGHT:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                case STRAIGHT:next = odds.get(i.getKey()) * scale;
+                    odds.put(i.getKey(),next);
                     break;
-                case TUBES:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                case TUBES:next = odds.get(i.getKey()) * scale;
+                    odds.put(i.getKey(),next);
                     break;
             }
         }
+        if(nsLevel.DEBUG){
+            System.out.println("scaled");
+            stringOut();
+        }
+        
     }
 
     public void sanityAndStats() {
-
+        int tempOdds = 0;
+        
         for (Map.Entry<ODDS_E, Integer> val : odds.entrySet()) {
             //failsafe (no negative odds)
             if (val.getValue() < 0) {
-                val.setValue(0);
+                val.setValue(1);
             }
 
-            totalOdds += val.getValue();
-            bounds.put(val.getKey(), totalOdds);
+            tempOdds += val.getValue();
+            bounds.put(val.getKey(), tempOdds);
+        }
+        
+        if(nsLevel.DEBUG){
+            System.out.println("sanity");
+            stringOut();
         }
 //COULD Normalize, but we don't have to, and current logic in nsLevel is set up
 //  for no normalization

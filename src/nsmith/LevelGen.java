@@ -52,8 +52,10 @@ public class LevelGen extends CustomizedLevelGenerator {
         
         seed = new Random().nextLong();
 //        seed = -4986433319767209288L; well balanced level
+//        -2266529554013408243
 //        -4364097651690792009
 //        -3732855959174562952
+//        -4201392615275519362
         //THIS IS OUR DIFFICULTY
         int difficulty = calculateDifficulty(playerMetrics);
         
@@ -192,26 +194,26 @@ public class LevelGen extends CustomizedLevelGenerator {
     }
     private int calculateDifficulty(GamePlay playerMetrics) {
         float difficulty = 1;
-        difficulty -= 1 * playerMetrics.timesOfDeathByArmoredTurtle;
-        difficulty += 3 * playerMetrics.ArmoredTurtlesKilled;
+        difficulty += 1 * playerMetrics.timesOfDeathByArmoredTurtle+1;
+        difficulty += 3 * playerMetrics.ArmoredTurtlesKilled+1;
         
-        difficulty -= 1 * playerMetrics.timesOfDeathByCannonBall;
-        difficulty += 2 * playerMetrics.CannonBallKilled;
+        difficulty -= 1 * playerMetrics.timesOfDeathByCannonBall+1;
+        difficulty += 2 * playerMetrics.CannonBallKilled+1;
         
-        difficulty -= 2.5 * playerMetrics.timesOfDeathByChompFlower;
-        difficulty += 1.5 * playerMetrics.ChompFlowersKilled;
+        difficulty -= 2.5 * playerMetrics.timesOfDeathByChompFlower+1;
+        difficulty += 1.5 * playerMetrics.ChompFlowersKilled+1;
         
-        difficulty -= 6 * playerMetrics.timesOfDeathByGoomba;
-        difficulty += 4  * playerMetrics.GoombasKilled;
+        difficulty -= 6 * playerMetrics.timesOfDeathByGoomba+1;
+        difficulty += 4  * playerMetrics.GoombasKilled+1;
         
-        difficulty -= 3 * playerMetrics.timesOfDeathByGreenTurtle;
-        difficulty += 1 * playerMetrics.GreenTurtlesKilled;
+        difficulty -= 3 * playerMetrics.timesOfDeathByGreenTurtle+1;
+        difficulty += 1 * playerMetrics.GreenTurtlesKilled+1;
         
-        difficulty -= 3 * playerMetrics.timesOfDeathByRedTurtle;
-        difficulty += 1 * playerMetrics.RedTurtlesKilled;
+        difficulty -= 3 * playerMetrics.timesOfDeathByRedTurtle+1;
+        difficulty += 1 * playerMetrics.RedTurtlesKilled+1;
         
-        difficulty -= 2 * playerMetrics.timesOfDeathByJumpFlower;
-        difficulty -= 4 * playerMetrics.timesOfDeathByFallingIntoGap;
+        difficulty -= 2 * playerMetrics.timesOfDeathByJumpFlower+1;
+        difficulty -= 4 * playerMetrics.timesOfDeathByFallingIntoGap+1;
         
         int difficulty_i = (int) difficulty * 10;
         

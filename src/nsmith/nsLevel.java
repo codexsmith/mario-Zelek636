@@ -36,8 +36,8 @@ public class nsLevel extends RandomLevel implements GameBlock {
     protected int coins;
     protected long seed;
     
-    private static final int maxDifficultyS = 30;//CHANGE ME
-    private final int maxDifficulty = 30;//AND ME
+    private static final int maxDifficultyS = 20;//CHANGE ME
+    private final int maxDifficulty = 20;//AND ME
     
     protected GamePlay playerN;
     private ArrayList<GameBlock> map_blocks;
@@ -268,9 +268,10 @@ public class nsLevel extends RandomLevel implements GameBlock {
         int change = random.nextInt(3);
 
         if (change == 0) {
-            diff += random.nextInt(diff/3 + 1);
+            
+            diff += random.nextInt((diff+1) /2);
         } else if (change == 1) {
-            diff -= random.nextInt(diff/3 + 1);
+            diff -= random.nextInt((diff+1) /2);
         }
 
         if (diff > maxDifficulty) {
@@ -278,7 +279,14 @@ public class nsLevel extends RandomLevel implements GameBlock {
         } else if (diff < 1) {
             diff = 1;
         }
-
+        
+        if(DEBUG){
+            System.out.println(difficulty + " -> " +diff);
+        }
+        
+        difficulty_history.add(difficulty);
+        difficulty = diff;
+        
         return diff;
     }
 

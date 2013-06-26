@@ -17,7 +17,8 @@ public class ElementOdds {
 
     public static enum ODDS_E {
 
-        STRAIGHT(0), HILL_STRAIGHT(1), TUBES(2), JUMP(3), CANNONS(4), CANNON_ARRAY(5), CAVE(6);
+        STRAIGHT(0), HILL_STRAIGHT(1), TUBES(2), JUMP(3), CANNONS(4),
+            CANNON_ARRAY(5), CAVE(6), VALLEY(7), PILLAR_JUMP(8);
         private final int index;
 
         ODDS_E(int index) {
@@ -46,7 +47,9 @@ public class ElementOdds {
         odds.put(ODDS_E.TUBES, 3);
         odds.put(ODDS_E.CANNON_ARRAY, 2);
         odds.put(ODDS_E.CAVE, 2);
-     
+        odds.put(ODDS_E.VALLEY, 5);
+        odds.put(ODDS_E.PILLAR_JUMP, 5);
+
         totalOdds = 0;
 
         sanityAndStats();
@@ -69,9 +72,13 @@ public class ElementOdds {
                     break;
                 case JUMP: odds.put(i.getKey(),odds.get(i.getKey()) * scale);
                     break;
+                case PILLAR_JUMP:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                    break;
                 case STRAIGHT:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
                     break;
                 case TUBES:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                    break;
+                case VALLEY:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
                     break;
             }
         }

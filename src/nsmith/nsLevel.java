@@ -245,6 +245,12 @@ public class nsLevel extends RandomLevel implements GameBlock {
         } else if (pick < oddsObj.bounds.get(ODDS_E.CAVE) && (allowance > 0)) {
             allowance--;
             next = new Cave(this, origin, length, difficult);
+        } else if (pick < oddsObj.bounds.get(ODDS_E.VALLEY) && (allowance > 0)) {
+            allowance--;
+            next = new Valley(this, origin, length, difficult);
+        } else if (pick < oddsObj.bounds.get(ODDS_E.PILLAR_JUMP) && (allowance > 0)) {
+            allowance--;
+            next = new PillarJump(this, origin, length, difficult);
         }
 
         }
@@ -634,6 +640,149 @@ public class nsLevel extends RandomLevel implements GameBlock {
         }
 
         return buildStraight(xo, length, height, height - 1 - random.nextInt(4), safe);
+    }
+    
+    public void buildSingleCannon(int x, int floor, int cannonHeight) {
+        setBlock(x, floor - cannonHeight, (byte) 14);
+        setBlock(x, floor - cannonHeight + 1, (byte) 30);
+        for (int y = floor - cannonHeight + 2; y < floor; y++)
+            setBlock(x, y, (byte) 46);
+    }
+    
+    public void buildRockPillar(int x, int floor, int pillarHeight) {
+        for (int y = floor - pillarHeight; y < floor; y++)
+            setBlock(x, y, ROCK);
+    }
+    
+    public void buildSingleTube(int x, int floor, int tubeHeight) {
+        setBlock(x, floor - tubeHeight, (byte) 10);
+        setBlock(x + 1, floor - tubeHeight, (byte) 11);
+        for (int y = floor - tubeHeight + 1; y < floor; y++) {
+            setBlock(x, y, (byte) 26);
+            setBlock(x + 1, y, (byte) 27);
+        }
+    }
+    
+    public void buildSingleCannonArray(int x, int floor, int cannonHeight) {
+        for (int y = floor - cannonHeight; y < floor; y++)
+            setBlock(x, y, (byte) 14);
+    }
+    
+    public int buildPillarJump(int xo, int maxLength) {
+        if (xo < 5) return 0;
+        
+        int length = Math.min(random.nextInt(5) + 5, maxLength);
+        int type = random.nextInt(100);
+        int xPillar = xo + 1 + random.nextInt(3);
+        
+        for (int x = xo; x < xo + length; x++) {
+            if (x == xPillar) {
+                int pillarHeight = 2 + random.nextInt(4);
+                if (type < difficulty) {
+                    buildSingleCannon(x, height, pillarHeight);
+                    xPillar += 1 + random.nextInt(1);
+                } else if (type < difficulty * 2) {
+                    buildRockPillar(x, height, pillarHeight);
+                    xPillar += 1 + random.nextInt(1);
+                } else {
+                    buildSingleTube(x, height, pillarHeight);
+                    xPillar += 2 + random.nextInt(2);
+                    if (type < difficulty * 3)
+                        setSpriteTemplate(x, height - pillarHeight,
+                                new SpriteTemplate(Enemy.ENEMY_FLOWER, false));
+                }
+                if (xPillar > length)
+                    return xPillar - xo;
+            }
+        }
+        
+        return length;
+    }
+    
+    public int buildValley(int xo, int maxLength) {
+        if (xo < 5) return 0;
+        
+        int length = Math.min(random.nextInt(5) + 15, maxLength);
+        int floor = height - 1 - random.nextInt(4);
+        int start = 0;
+        int end = 0;
+        
+        buildStraight(xo, length, height, floor, true);
+        
+        // Entry
+        
+        if (length > 18) {
+            // Stairs
+            start = xo + 6;
+            for (int x = xo + 2; x < xo + 6; x++) {
+                for (int y = floor + 1 - (x - xo); y < floor; y++) {
+                    setBlock(x, y, ROCK);
+                }
+            }
+        } else if (random.nextInt(50) < difficulty) {
+            buildSingleCannon(xo + 2, floor, 4);
+            start = xo + 3;
+        } else if (random.nextInt(3) > 1) {
+            // Rocks
+            buildRockPillar(xo + 2, floor, 4);
+            start = xo + 3;
+        } else {
+            // Tube
+            buildSingleTube(xo + 2, floor, 4);
+            start = xo + 4;
+        }
+        
+        // Exit
+        
+        if (random.nextInt(80) < difficulty) {
+            // Cannon Array
+            buildSingleCannonArray(xo + length - 1, floor, 4);
+            end = xo + length - 2;
+        } else if (random.nextInt(3) > 1) {
+            // Rocks
+            buildRockPillar(xo + length - 1, floor, height);
+            end = xo + length - 2;
+        } else {
+            // Tube
+            buildSingleTube(xo + length - 2, floor, height);
+            end = xo + length - 3;
+        }
+        
+        // Roof
+        
+        for (int x = start + 3; x < end - 2; x++)
+            setBlock(x, floor - 8, BLOCK_EMPTY);
+        
+        // Enemies & powerups
+        int center = (start + end) / 2;
+        int enemyCountDown = center;
+        while (random.nextInt(30) < difficulty && enemyCountDown > start)
+            addEnemy(enemyCountDown--, floor - 1);
+        if (enemyCountDown < center) {
+            setBlock (center, floor - 4, BLOCK_POWERUP);
+            if (enemyCountDown < center - 1)
+                setBlock (center, floor - 8, BLOCK_POWERUP);
+        }
+    
+        return length;
+    }
+    
+    public void addEnemy(int x, int y) {
+        if (turtles < Constraints.turtels) {
+            int type = random.nextInt(4);
+            if (type == Enemy.ENEMY_GREEN_KOOPA || type == Enemy.ENEMY_RED_KOOPA) {
+                turtles++;
+                setSpriteTemplate(x, y, new SpriteTemplate(type,
+                        random.nextInt(35) < difficulty));
+            } else {
+                setSpriteTemplate(x, y, new SpriteTemplate(type,
+                        random.nextInt(35) < difficulty));
+            }
+        }
+        else {
+                setSpriteTemplate(x, y, new SpriteTemplate(Enemy.ENEMY_GOOMBA,
+                        random.nextInt(35) < difficulty));
+        }
     }
 
     public int buildStraight(int xo, int length, int bottom, int floor, boolean safe) {

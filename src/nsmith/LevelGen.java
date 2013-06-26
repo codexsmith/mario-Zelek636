@@ -48,7 +48,7 @@ public class LevelGen extends CustomizedLevelGenerator {
     @Override
     public LevelInterface generateLevel(GamePlay playerMetrics) {
         
-//        readLabeledSet();
+        readLabeledSet();
         
         seed = new Random().nextLong();
         
@@ -72,27 +72,21 @@ public class LevelGen extends CustomizedLevelGenerator {
             String line = null;
             String[] lineIn;
             int dataNo = 0;
-            ArrayList<Integer> entryRow = new ArrayList<Integer>();
-            ArrayList<Integer> labels = new ArrayList<Integer>();
+            ArrayList<Integer> labels;
             try {
                 
                 while ((line = reader.readLine()) != null) {
+                    labels = new ArrayList<Integer>();
                     if(nsLevel.DEBUG)System.out.println(line);
                     
                     lineIn = line.split(" ");
-                    
-                    if(seedLabels.hasKey(Long.decode(lineIn[0]))){
-                        entryRow = seedLabels.getValue(seedLabels.getIndex(seed, true));
-                    }
-                    
+                                        
                     for(int i = 1; i < lineIn.length; i++){   
                         labels.add(Integer.decode(lineIn[i]));
                     }
                     
-                    
-//                    entryRow.add(labels);
-                    
-                    seedLabels.addEntry(Long.decode(lineIn[0]), entryRow );
+                                        
+                    seedLabels.addEntry(Long.decode(lineIn[0]), labels );
                         
                 }
                 
@@ -109,12 +103,17 @@ public class LevelGen extends CustomizedLevelGenerator {
             try{
 
                 PrintWriter out = new PrintWriter("src/nsmith/seedDataSet.txt");
+                String[] lines = seedLabels.toFileString();
                 
-                for(String st : seedLabels.toFileString()){
+                for(String st : lines){
+//                for( int i = seedLabels.getPrevLength(); i < seedLabels.getCurrentLength(); i++){
+                    
                     if(nsLevel.DEBUG){
                         System.out.println(st);
+//                        System.out.println(lines[i]);
                     }
-                       out.println(st);
+                    out.println(st);
+//                       out.println(lines[i]);
                 }
                 
                 out.flush();

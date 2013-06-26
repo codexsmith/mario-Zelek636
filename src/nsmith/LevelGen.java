@@ -54,7 +54,12 @@ public class LevelGen extends CustomizedLevelGenerator {
         //THIS IS OUR DIFFICULTY
         int difficulty = calculateDifficulty(playerMetrics);
         
-        if(difficulty <= 0){
+         if(nsLevel.DEBUG){
+                System.out.println("Calculated Difficulty "+difficulty);
+                System.out.println();
+        }
+        
+        if(difficulty < 1){
             difficulty = 1;
         }
         
@@ -72,27 +77,27 @@ public class LevelGen extends CustomizedLevelGenerator {
         return level;
     }
     
-    public LevelInterface generateTestLevel(GamePlay playerMetrics){
-        
-        readLabeledSet();
-                
-        seed = pickFromTrainingSet();
-        
-        int difficulty = calculateDifficulty(playerMetrics);
-
-        if (nsLevel.createNsLevel(320, 15, seed, difficulty, 0, playerMetrics)) {
-            nsLevel.LEVEL.creat();
-            level = nsLevel.getLEVEL();
-        } else {
-            nsLevel.clearLEVEL(true);
-            nsLevel.createNsLevel(320, 15, seed, difficulty, 0, playerMetrics);
-            nsLevel.LEVEL.creat();
-            level = nsLevel.getLEVEL();
-
-        }
-        
-        return level;
-    }
+//    public LevelInterface generateTestLevel(GamePlay playerMetrics){
+//        
+//        readLabeledSet();
+//                
+//        seed = pickFromTrainingSet();
+//        
+//        int difficulty = calculateDifficulty(playerMetrics);
+//
+//        if (nsLevel.createNsLevel(320, 15, seed, difficulty, 0, playerMetrics)) {
+//            nsLevel.LEVEL.creat();
+//            level = nsLevel.getLEVEL();
+//        } else {
+//            nsLevel.clearLEVEL(true);
+//            nsLevel.createNsLevel(320, 15, seed, difficulty, 0, playerMetrics);
+//            nsLevel.LEVEL.creat();
+//            level = nsLevel.getLEVEL();
+//
+//        }
+//        
+//        return level;
+//    }
     
     private void readLabeledSet(){
             
@@ -136,10 +141,10 @@ public class LevelGen extends CustomizedLevelGenerator {
                 for(String st : lines){
 //                for( int i = seedLabels.getPrevLength(); i < seedLabels.getCurrentLength(); i++){
                     
-                    if(nsLevel.DEBUG){
-                        System.out.println(st);
-//                        System.out.println(lines[i]);
-                    }
+//                    if(nsLevel.DEBUG){
+//                        System.out.println(st);
+////                        System.out.println(lines[i]);
+//                    }
                     out.println(st);
 //                       out.println(lines[i]);
                 }
@@ -183,29 +188,31 @@ public class LevelGen extends CustomizedLevelGenerator {
        writeLabel();
     }
     private int calculateDifficulty(GamePlay playerMetrics) {
-        int difficulty = 0;
-        difficulty -= 10 * playerMetrics.timesOfDeathByArmoredTurtle;
-        difficulty += 30 * playerMetrics.ArmoredTurtlesKilled;
+        float difficulty = 1;
+        difficulty -= 1 * playerMetrics.timesOfDeathByArmoredTurtle;
+        difficulty += 3 * playerMetrics.ArmoredTurtlesKilled;
         
-        difficulty -= 10 * playerMetrics.timesOfDeathByCannonBall;
-        difficulty += 20 * playerMetrics.CannonBallKilled;
+        difficulty -= 1 * playerMetrics.timesOfDeathByCannonBall;
+        difficulty += 2 * playerMetrics.CannonBallKilled;
         
-        difficulty -= 25 * playerMetrics.timesOfDeathByChompFlower;
-        difficulty += 15 * playerMetrics.ChompFlowersKilled;
+        difficulty -= 2.5 * playerMetrics.timesOfDeathByChompFlower;
+        difficulty += 1.5 * playerMetrics.ChompFlowersKilled;
         
-        difficulty -= 60 * playerMetrics.timesOfDeathByGoomba;
+        difficulty -= 6 * playerMetrics.timesOfDeathByGoomba;
         difficulty += 4  * playerMetrics.GoombasKilled;
         
-        difficulty -= 30 * playerMetrics.timesOfDeathByGreenTurtle;
-        difficulty += 10 * playerMetrics.GreenTurtlesKilled;
+        difficulty -= 3 * playerMetrics.timesOfDeathByGreenTurtle;
+        difficulty += 1 * playerMetrics.GreenTurtlesKilled;
         
-        difficulty -= 30 * playerMetrics.timesOfDeathByRedTurtle;
-        difficulty += 10 * playerMetrics.RedTurtlesKilled;
+        difficulty -= 3 * playerMetrics.timesOfDeathByRedTurtle;
+        difficulty += 1 * playerMetrics.RedTurtlesKilled;
         
-        difficulty -= 25 * playerMetrics.timesOfDeathByJumpFlower;
-        difficulty -= 40 * playerMetrics.timesOfDeathByFallingIntoGap;
+        difficulty -= 2 * playerMetrics.timesOfDeathByJumpFlower;
+        difficulty -= 4 * playerMetrics.timesOfDeathByFallingIntoGap;
         
-        return difficulty < 1 ? 1 : difficulty;
+        int difficulty_i = (int) difficulty * 10;
+        
+        return difficulty_i < 1 ? 1 : difficulty_i;
     }
 
     public boolean resetFeedBack() {

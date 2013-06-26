@@ -31,7 +31,9 @@ public class ElementOdds {
     public HashMap<ODDS_E, Integer> bounds; //linear scalable discrete partition of the likelyhood of each peice
     public HashMap<ODDS_E, Integer> odds; //RAW unscaled odds
     public int totalOdds;
-    public static final int JumpingThreshold = 3;
+    public final int JumpingThreshold = 3;
+    public final int enemyScale = 3;
+    public final int decorateScale = 3;
 
     public ElementOdds(GamePlay playerMetric) {
         bounds = new HashMap<ODDS_E, Integer>();
@@ -40,11 +42,11 @@ public class ElementOdds {
         odds.put(ODDS_E.JUMP, 3);
         odds.put(ODDS_E.STRAIGHT, 8);
         odds.put(ODDS_E.HILL_STRAIGHT, 8);
-        odds.put(ODDS_E.CANNONS, 5);
+        odds.put(ODDS_E.CANNONS, 3);
         odds.put(ODDS_E.TUBES, 3);
-        odds.put(ODDS_E.CANNON_ARRAY, 3);
+        odds.put(ODDS_E.CANNON_ARRAY, 1);
         odds.put(ODDS_E.CAVE, 2);
-
+     
         totalOdds = 0;
 
         sanityAndStats();

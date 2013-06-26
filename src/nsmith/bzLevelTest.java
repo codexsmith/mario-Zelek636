@@ -81,6 +81,11 @@ public class bzLevelTest extends LevelSceneTest {
             gp = new GamePlay();
             gp = gp.read("player.txt");
             
+            if(nsLevel.DEBUG){
+                System.out.println(gp.toString());
+                System.out.println();
+            }
+            
 //            if(isTestLevel){
 //                currentLevel = (Level) clg.generateTestLevel(gp);
 //            }

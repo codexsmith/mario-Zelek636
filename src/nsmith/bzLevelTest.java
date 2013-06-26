@@ -36,6 +36,7 @@ public class bzLevelTest extends LevelSceneTest {
     private boolean isCustom;
     LevelGen clg;
     GamePlay gp;
+    
 
     public bzLevelTest(GraphicsConfiguration graphicsConfiguration,
             MarioComponent renderer, long seed, int levelDifficulty, int type, boolean isCustom) {
@@ -45,14 +46,24 @@ public class bzLevelTest extends LevelSceneTest {
 
     public void resetLevel() {
         clg = new LevelGen();
-        gp = new GamePlay();
-        gp = gp.read("player.txt");
         currentLevel = (Level) clg.generateLevel(gp);
         
+         try {
+            level = currentLevel.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
         
-        
+        recorder = new DataRecorder(this,nsLevel.LEVEL,keys);
     }
-
+    
+    
+    
+    public void resetGamePlay(){
+        gp = new GamePlay();
+        gp = gp.read("player.txt");
+    }
+    
     public void init() {
         try {
             Level.loadBehaviors(new DataInputStream(ResourcesManager.class.getResourceAsStream("res/tiles.dat")));
@@ -60,7 +71,7 @@ public class bzLevelTest extends LevelSceneTest {
             e.printStackTrace();
             System.exit(0);
         }
-
+        
         if (level == null) {
             clg = new LevelGen();
             gp = new GamePlay();
@@ -78,6 +89,10 @@ public class bzLevelTest extends LevelSceneTest {
             e.printStackTrace();
         }
 
+        if(recorder == null){
+            recorder = new DataRecorder(this,nsLevel.LEVEL,keys);
+        }
+        
         //level is always overground
         Art.startMusic(1);
 
@@ -144,7 +159,7 @@ public class bzLevelTest extends LevelSceneTest {
         }
 
         clg.surveyFeedBack();
-
+        resetGamePlay();
         marioComponent.win();
     }
 
@@ -155,7 +170,7 @@ public class bzLevelTest extends LevelSceneTest {
             }
 
             clg.surveyFeedBack();
-
+            
             marioComponent.lose();
         } else { // mario still has lives to play :)--> have a new beginning
 
@@ -163,6 +178,7 @@ public class bzLevelTest extends LevelSceneTest {
 
             if (newLevel) {
                 clg.surveyFeedBack();
+                resetLevel();
                 init();
             } else {
                 reset();
@@ -247,8 +263,9 @@ public class bzLevelTest extends LevelSceneTest {
         timeLeft = 200 * 15;
         Art.startMusic(1);
         tick = 0;
-//        recorder = new DataRecorder(this,level,keys,gametype);
-//        recorder.detailedLog = "";
+        
+        recorder.detailedLog = "";
+        
         gameStarted = false;
     }
 

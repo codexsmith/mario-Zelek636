@@ -145,8 +145,8 @@ public class nsLevel extends RandomLevel implements GameBlock{
             jumpDifficulty = 2;
         oddsObj.odds.put(ElementOdds.ODDS_E.JUMP, jumpDifficulty);;
         oddsObj.odds.put(ElementOdds.ODDS_E.CANNONS, 10 + 5 * difficulty);
-        oddsObj.odds.put(ElementOdds.ODDS_E.CANNON_ARRAY, 30 * difficulty);
-        oddsObj.odds.put(ElementOdds.ODDS_E.CAVE, 30 / difficulty);
+        oddsObj.odds.put(ElementOdds.ODDS_E.CANNON_ARRAY, 5 * difficulty);
+        oddsObj.odds.put(ElementOdds.ODDS_E.CAVE, 50 * difficulty);
 
         if (type != LevelInterface.TYPE_OVERGROUND) {
             oddsObj.odds.put(ElementOdds.ODDS_E.HILL_STRAIGHT, 0);
@@ -291,6 +291,8 @@ public class nsLevel extends RandomLevel implements GameBlock{
     }
     
     public int buildJump(int xo, int maxLength) {
+        if (xo < 10) return 0;
+        
         gaps++;
         //jl: jump length
         //js: the number of blocks that are available at either side for free
@@ -330,6 +332,8 @@ public class nsLevel extends RandomLevel implements GameBlock{
     }
 
     public int buildCannons(int xo, int maxLength) {
+        if (xo < 10) return 0;
+        
         int length = random.nextInt(10) + 2;
         if (length > maxLength) length = maxLength;
 
@@ -363,6 +367,8 @@ public class nsLevel extends RandomLevel implements GameBlock{
     }
     
     public int buildCannonArray(int xo, int maxLength) {
+        if (xo < 10) return 0;
+        
         int length = random.nextInt(20) + 6;
         if (length > maxLength) length = maxLength;
         
@@ -455,8 +461,10 @@ public class nsLevel extends RandomLevel implements GameBlock{
     }
 
     public void addEnemyLine(int x0, int x1, int y) {
+        if (x0 < 10) return;
+        
         for (int x = x0; x < x1; x++) {
-            if (random.nextInt(50) < 25) {
+            if (random.nextInt(50) < difficulty) {
                 int type = random.nextInt(4);
 
                     type = random.nextInt(3);
@@ -495,7 +503,7 @@ public class nsLevel extends RandomLevel implements GameBlock{
             }
             if (xTube >= xo + length - 2) xTube += 10;
 
-            if (x == xTube && random.nextInt(11) < difficulty + 1) {
+            if (x > 5 && x == xTube && random.nextInt(11) < difficulty + 1) {
                 setSpriteTemplate(x, tubeHeight,
                                   new SpriteTemplate(Enemy.ENEMY_FLOWER, false));
             }

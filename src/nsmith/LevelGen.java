@@ -51,6 +51,9 @@ public class LevelGen extends CustomizedLevelGenerator {
         readLabeledSet();
         
         seed = new Random().nextLong();
+//        seed = -4986433319767209288L; well balanced level
+//        -4364097651690792009
+//        -3732855959174562952
         //THIS IS OUR DIFFICULTY
         int difficulty = calculateDifficulty(playerMetrics);
         

@@ -175,6 +175,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 		        float averagePassedTime = 0;
 
 		        boolean naiveTiming = true;
+                        
 		        if (isCustom)
 		        	toCustomGame();
 		        else
@@ -348,7 +349,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 		    	scene = randomLevel;
 
 		    }
-
+                                        
 		    public void lose(){
 		        scene = new LoseScene();
 		        scene.setSound(sound);

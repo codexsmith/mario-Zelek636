@@ -34,7 +34,7 @@ public class Hill implements GameBlock{
     public int Add(int type) {
         
         if(type == 0){
-            actualLength = nsLevel.LEVEL.buildHillStraight(absPos, possibleLength);
+            actualLength = nsLevel.LEVEL.buildHillStraight(absPos, possibleLength, blockDifficulty);
         }
         
         return actualLength;

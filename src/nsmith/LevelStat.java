@@ -105,6 +105,20 @@ public class LevelStat {
                 
     }
     
+    public ArrayList<Integer> getPlayableANDEnjoyable(){
+        ArrayList<Integer> indexWanted = new ArrayList<Integer>();
+        
+        for(int i = 0; i < stats.size(); i++){
+            ArrayList<Integer> a_i = stats.get(i);
+            
+            if(a_i.get(0) == 0 && a_i.get(1) == 0){
+                indexWanted.add(i);
+            }
+        }
+        
+        return indexWanted;
+    }
+    
     public HashMap<Integer, ArrayList<Integer>> getMapKey(Long test){
         HashMap<Integer, ArrayList<Integer>> values = null;
         ArrayList<Integer> index = new ArrayList<Integer>();

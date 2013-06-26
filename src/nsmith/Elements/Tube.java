@@ -40,7 +40,7 @@ public class Tube implements GameBlock {
         //perhaps use type to artificially inflate the difficulty?
         //would have to 'rewrite' nsLevel.buildTubes into this class.
         if(type == 0){
-            actualLength = nsLevel.LEVEL.buildTubes(absPos, possibleLength);
+            actualLength = nsLevel.LEVEL.buildTubes(absPos, possibleLength, blockDifficulty);
         }
         
         return actualLength;

@@ -38,7 +38,7 @@ public class Cannon implements GameBlock{
     public int Add(int type) {
                 
         if(type == 0){
-            actualLength = nsLevel.LEVEL.buildCannons(absPos, possibleLength);
+            actualLength = nsLevel.LEVEL.buildCannons(absPos, possibleLength, blockDifficulty);
         }
         return actualLength;
         

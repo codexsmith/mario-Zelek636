@@ -37,6 +37,9 @@ public class bzLevelTest extends LevelSceneTest {
     LevelGen clg;
     GamePlay gp;
     
+//    Boolean isTestLevel = true;
+    
+    
 
     public bzLevelTest(GraphicsConfiguration graphicsConfiguration,
             MarioComponent renderer, long seed, int levelDifficulty, int type, boolean isCustom) {
@@ -55,13 +58,14 @@ public class bzLevelTest extends LevelSceneTest {
         }
         
         recorder = new DataRecorder(this,nsLevel.LEVEL,keys);
+//        isTestLevel = true;
+        
     }
-    
-    
-    
+        
     public void resetGamePlay(){
-        gp = new GamePlay();
         gp = gp.read("player.txt");
+//        isTestLevel = false;
+        
     }
     
     public void init() {
@@ -76,12 +80,20 @@ public class bzLevelTest extends LevelSceneTest {
             clg = new LevelGen();
             gp = new GamePlay();
             gp = gp.read("player.txt");
-            currentLevel = (Level) clg.generateLevel(gp);
+            
+//            if(isTestLevel){
+//                currentLevel = (Level) clg.generateTestLevel(gp);
+//            }
+//            else{
+                currentLevel = (Level) clg.generateLevel(gp);
+//            }
+            
 
             //You can use the following commands if you want to benefit from
             //	the interface containing detailed information
             String detailedInfo = FileHandler.readFile("DetailedInfo.txt");
-
+            
+            
         }
         try {
             level = currentLevel.clone();
@@ -160,7 +172,16 @@ public class bzLevelTest extends LevelSceneTest {
 
         clg.surveyFeedBack();
         resetGamePlay();
-        marioComponent.win();
+        resetLevel();
+        
+//        if(isTestLevel){
+//            
+//        }
+//        else{
+            marioComponent.win();
+//        }
+        
+        
     }
 
     public void deathActions() {
@@ -175,7 +196,7 @@ public class bzLevelTest extends LevelSceneTest {
         } else { // mario still has lives to play :)--> have a new beginning
 
             boolean newLevel = clg.resetFeedBack();
-
+            
             if (newLevel) {
                 clg.surveyFeedBack();
                 resetLevel();

@@ -28,7 +28,7 @@ public class CannonArray implements GameBlock {
     @Override
     public int Add(int type) {
         if (type == 0)
-            actualLength = nsLevel.LEVEL.buildCannonArray(absPos, possibleLength);
+            actualLength = nsLevel.LEVEL.buildCannonArray(absPos, possibleLength, blockDifficulty);
         return actualLength;
     }
 

@@ -42,17 +42,17 @@ public class Straight implements GameBlock{
     @Override
     public int Add(int type) {
         if(type == 0){
-            actualLength = nsLevel.LEVEL.buildStraight(absPos, possibleLength, false);
+            actualLength = nsLevel.LEVEL.buildStraight(absPos, possibleLength, false, blockDifficulty);
         }
         else if(type == 1){
-            actualLength = nsLevel.LEVEL.buildStraight(absPos, possibleLength, true);
+            actualLength = nsLevel.LEVEL.buildStraight(absPos, possibleLength, true, blockDifficulty);
         }
       
         return actualLength;
     }
     //random safe/unsafe opening, can add type here to add more functionality
     public int buildOpening(){
-        return nsLevel.LEVEL.buildStraight(0, nsLevel.LEVEL.getWidth(), random.nextInt(2) == 0 ? true : false);
+        return nsLevel.LEVEL.buildStraight(0, 30, random.nextInt(blockDifficulty) == 1 ? true : false, blockDifficulty);
     }
     
     @Override

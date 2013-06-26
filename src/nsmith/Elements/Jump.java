@@ -33,7 +33,7 @@ public class Jump implements GameBlock{
     @Override
     public int Add(int type) {
         if(type == 0){
-            actualLength = nsLevel.LEVEL.buildJump(absPos, possibleLength);
+            actualLength = nsLevel.LEVEL.buildJump(absPos, possibleLength, blockDifficulty);
         }
         return actualLength;
     }

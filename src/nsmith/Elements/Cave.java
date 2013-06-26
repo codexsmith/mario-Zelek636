@@ -27,7 +27,7 @@ public class Cave implements GameBlock{
     @Override
     public int Add(int type) {
         if (type == 0)
-            actualLength = nsLevel.LEVEL.buildCave(absPos, possibleLength);
+            actualLength = nsLevel.LEVEL.buildCave(absPos, possibleLength, blockDifficulty);
         return actualLength;
     }
 

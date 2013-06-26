@@ -67,6 +67,28 @@ public class LevelGen extends CustomizedLevelGenerator {
         return level;
     }
     
+    public LevelInterface generateTestLevel(GamePlay playerMetrics){
+        
+        readLabeledSet();
+                
+        seed = pickFromTrainingSet();
+        
+        int difficulty = calculateDifficulty(playerMetrics);
+
+        if (nsLevel.createNsLevel(320, 15, seed, difficulty, 0, playerMetrics)) {
+            nsLevel.LEVEL.creat();
+            level = nsLevel.getLEVEL();
+        } else {
+            nsLevel.clearLEVEL(true);
+            nsLevel.createNsLevel(320, 15, seed, difficulty, 0, playerMetrics);
+            nsLevel.LEVEL.creat();
+            level = nsLevel.getLEVEL();
+
+        }
+        
+        return level;
+    }
+    
     private void readLabeledSet(){
             
             BufferedReader reader = new BufferedReader(file);
@@ -197,5 +219,15 @@ public class LevelGen extends CustomizedLevelGenerator {
         else{
             return true;
         }
+    }
+
+    private long pickFromTrainingSet() {
+        long pick = 0L;
+        ArrayList<Integer> indexes = seedLabels.getPlayableANDEnjoyable();
+        Random rand = new Random();
+        
+        pick = seedLabels.getKey(indexes.get(rand.nextInt(indexes.size())));
+        
+        return pick;
     }
 }

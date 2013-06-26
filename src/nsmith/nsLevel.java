@@ -40,6 +40,8 @@ public class nsLevel extends RandomLevel implements GameBlock{
     
     protected long seed;
     
+    private final int maxDifficulty = 20;//CHANGE ME
+    
     protected GamePlay playerN;
     
     private ArrayList<GameBlock> map_blocks;
@@ -57,6 +59,7 @@ public class nsLevel extends RandomLevel implements GameBlock{
         }
     }
     
+        
     /**Just to be sure you MUST pass TRUE as the parameter
      * 
      * @param yesOrNo 
@@ -125,9 +128,13 @@ public class nsLevel extends RandomLevel implements GameBlock{
         
         this.playerN = playerMetrics;
         oddsObj = new ElementOdds(playerN);
+        
+       random = new Random(seed);
     }
     
     public void creat() {
+        
+                
         create(seed,difficulty,type);
     }
     public void create(long seed, int difficulty, int type) {
@@ -151,9 +158,7 @@ public class nsLevel extends RandomLevel implements GameBlock{
         if (type != LevelInterface.TYPE_OVERGROUND) {
             oddsObj.odds.put(ElementOdds.ODDS_E.HILL_STRAIGHT, 0);
         }
-
         
-        random = new Random(seed);
         int length = 0;
         
         //Creating and adding blocks/ elements
@@ -169,7 +174,7 @@ public class nsLevel extends RandomLevel implements GameBlock{
         //create all middle sections      
         while(length < getWidth() - 64){
             //choose next block and it's difficulty
-            int nextDiff = decideBlockDifficulty();
+            int nextDiff = decideBlockDifficulty(maxDifficulty);
             GameBlock next = decideBlock(length,getWidth()-length, nextDiff);
             if(next == null){
                 continue;
@@ -249,14 +254,28 @@ public class nsLevel extends RandomLevel implements GameBlock{
         return next;
     }
     
-    public int decideBlockDifficulty(){
+    public int decideBlockDifficulty(int maxDiff){
         int diff = difficulty;
         
+        int change =random.nextInt(2);
         
+        if(change == 0){
+            diff += random.nextInt(diff);
+        }
+        else if (change == 1){
+            diff -= random.nextInt(diff);
+        }
         
-        //adjust for player preferences
+        if(diff > maxDiff){
+            diff = 10;
+        }
+        else if(diff < 1){
+            diff = 1;
+        }
+        
         return diff;
     }
+    
     public int getDifficulty(){
         return difficulty;
     }
@@ -290,14 +309,14 @@ public class nsLevel extends RandomLevel implements GameBlock{
         return yExit;
     }
     
-    public int buildJump(int xo, int maxLength) {
+    public int buildJump(int xo, int maxLength, int diff) {
         if (xo < 10) return 0;
         
         gaps++;
         //jl: jump length
         //js: the number of blocks that are available at either side for free
-        int js = random.nextInt(4) + 2;
-        int jl = random.nextInt(2) + 2;
+        int js = random.nextInt(diff) + 2;
+        int jl = random.nextInt(diff) + 2;
         int length = js * 2 + jl;
 
         boolean hasStairs = random.nextInt(3) == 0;
@@ -331,10 +350,10 @@ public class nsLevel extends RandomLevel implements GameBlock{
         return length;
     }
 
-    public int buildCannons(int xo, int maxLength) {
+    public int buildCannons(int xo, int maxLength, int diff) {
         if (xo < 10) return 0;
         
-        int length = random.nextInt(10) + 2;
+        int length = random.nextInt(diff) + 2;
         if (length > maxLength) length = maxLength;
 
         int floor = height - 1 - random.nextInt(4);
@@ -366,10 +385,10 @@ public class nsLevel extends RandomLevel implements GameBlock{
         return length;
     }
     
-    public int buildCannonArray(int xo, int maxLength) {
+    public int buildCannonArray(int xo, int maxLength, int diff) {
         if (xo < 10) return 0;
         
-        int length = random.nextInt(20) + 6;
+        int length = random.nextInt(diff) + 6;
         if (length > maxLength) length = maxLength;
         
         int floor = height - 1 - random.nextInt(4);
@@ -395,8 +414,8 @@ public class nsLevel extends RandomLevel implements GameBlock{
         return length;
     }
     
-    public int buildHillStraight(int xo, int maxLength) {
-        int length = random.nextInt(10) + 10;
+    public int buildHillStraight(int xo, int maxLength, int diff) {
+        int length = random.nextInt(diff) + 10;
         if (length > maxLength) length = maxLength;
 
         int floor = height - 1 - random.nextInt(4);
@@ -489,13 +508,21 @@ public class nsLevel extends RandomLevel implements GameBlock{
         }
     }
 
-    public int buildTubes(int xo, int maxLength) {
-        int length = random.nextInt(10) + 5;
+    /**difficulty adjusts length and tube height
+     * 
+     * @param xo
+     * @param maxLength
+     * @param diff
+     * @return 
+     */
+    
+    public int buildTubes(int xo, int maxLength, int diff) {
+        int length = random.nextInt(diff) + 5;
         if (length > maxLength) length = maxLength;
 
         int floor = height - 1 - random.nextInt(4);
         int xTube = xo + 1 + random.nextInt(4);
-        int tubeHeight = floor - random.nextInt(2) - 2;
+        int tubeHeight = floor - random.nextInt(4) + 2;
         for (int x = xo; x < xo + length; x++) {
             if (x > xTube + 1) {
                 xTube += 3 + random.nextInt(4);
@@ -531,9 +558,9 @@ public class nsLevel extends RandomLevel implements GameBlock{
         return length;
     }
     
-    public int buildCave(int xo, int maxLength) {
+    public int buildCave(int xo, int maxLength, int diff) {
         if (maxLength < 15) return 0;
-        int length = Math.min(maxLength, random.nextInt(10) + 15);
+        int length = Math.min(maxLength, random.nextInt(diff) + 15);
         
         int floor = height - 1 - random.nextInt(4);
         
@@ -556,8 +583,8 @@ public class nsLevel extends RandomLevel implements GameBlock{
         return length;
     }
 
-    public int buildStraight(int xo, int maxLength, boolean safe) {
-        int length = safe ? 10 + random.nextInt(5) : random.nextInt(10) + 2;
+    public int buildStraight(int xo, int maxLength, boolean safe, int diff) {
+        int length = safe ? random.nextInt(diff) + random.nextInt(diff) : random.nextInt(diff) + 2;
         if (length > maxLength)
             length = maxLength;
         

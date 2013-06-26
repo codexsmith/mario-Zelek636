@@ -37,17 +37,41 @@ public class ElementOdds {
         bounds = new HashMap<ODDS_E, Integer>();
         odds = new HashMap<ODDS_E, Integer>();
 
-        odds.put(ODDS_E.JUMP, 10);
-        odds.put(ODDS_E.STRAIGHT, 10);
-        odds.put(ODDS_E.HILL_STRAIGHT, 10);
-        odds.put(ODDS_E.CANNONS, 10);
-        odds.put(ODDS_E.TUBES, 10);
-        odds.put(ODDS_E.CANNON_ARRAY, 10);
-        odds.put(ODDS_E.CAVE, 10);
+        odds.put(ODDS_E.JUMP, 3);
+        odds.put(ODDS_E.STRAIGHT, 8);
+        odds.put(ODDS_E.HILL_STRAIGHT, 8);
+        odds.put(ODDS_E.CANNONS, 5);
+        odds.put(ODDS_E.TUBES, 3);
+        odds.put(ODDS_E.CANNON_ARRAY, 3);
+        odds.put(ODDS_E.CAVE, 2);
 
         totalOdds = 0;
 
         sanityAndStats();
+    }
+
+    public void scaleOdds(int maxDifficulty) {
+        
+        int scale = maxDifficulty/10;
+        
+        for(Map.Entry<ODDS_E, Integer> i : odds.entrySet()){
+            switch(i.getKey()){
+                case CANNONS:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                    break;
+                case CANNON_ARRAY:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                    break;
+                case CAVE:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                    break;
+                case HILL_STRAIGHT:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                    break;
+                case JUMP: odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                    break;
+                case STRAIGHT:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                    break;
+                case TUBES:odds.put(i.getKey(),odds.get(i.getKey()) * scale);
+                    break;
+            }
+        }
     }
 
     public void sanityAndStats() {

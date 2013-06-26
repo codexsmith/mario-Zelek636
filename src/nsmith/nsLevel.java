@@ -18,177 +18,166 @@ import java.util.Random;
 import nsmith.ElementOdds.ODDS_E;
 import nsmith.Elements.*;
 
-/**Starting with copy of CustomizedLevel. nsLevel is called from nsmith.LevelGen
+/**
+ * Starting with copy of CustomizedLevel. nsLevel is called from nsmith.LevelGen
  *
  * @author Nicholas Smith
  */
-public class nsLevel extends RandomLevel implements GameBlock{ 
-    
+public class nsLevel extends RandomLevel implements GameBlock {
+
     Random random;
-    
     public static boolean DEBUG = true;
-    
     ElementOdds oddsObj;
-    
     protected ArrayList<Integer> difficulty_history = new ArrayList<Integer>();
-    
     protected int difficulty;
     protected int type;
     protected int gaps;
     protected int turtles;
     protected int coins;
-    
     protected long seed;
-    
-    private final int maxDifficulty = 20;//CHANGE ME
-    
+    private static final int maxDifficultyS = 30;//CHANGE ME
+    private final int maxDifficulty = 30;//AND ME
     protected GamePlay playerN;
-    
     private ArrayList<GameBlock> map_blocks;
-    
-    
     public static nsLevel LEVEL = null;//singleton
-    
-    public static boolean createNsLevel(int width, int height, long seed, int difficulty,int type, GamePlay playerMetrics){
-        if(LEVEL == null){
-            LEVEL = new nsLevel( width,  height,  seed,  difficulty, type,  playerMetrics);
+
+    public static boolean createNsLevel(int width, int height, long seed, int difficulty, int type, GamePlay playerMetrics) {
+        if (LEVEL == null) {
+            
+            if(difficulty <= maxDifficultyS){
+                difficulty = difficulty/maxDifficultyS;
+            }
+            else{
+                difficulty = maxDifficultyS;
+            }
+            
+            LEVEL = new nsLevel(width, height, seed, difficulty, type, playerMetrics);
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
-    
-        
-    /**Just to be sure you MUST pass TRUE as the parameter
-     * 
-     * @param yesOrNo 
+
+    /**
+     * Just to be sure you MUST pass TRUE as the parameter
+     *
+     * @param yesOrNo
      */
-    public static void clearLEVEL(boolean yesOrNo){
-        if(yesOrNo){
+    public static void clearLEVEL(boolean yesOrNo) {
+        if (yesOrNo) {
             LEVEL = null;
         }
-    } 
-   
-    public static nsLevel getLEVEL(){
+    }
+
+    public static nsLevel getLEVEL() {
         return LEVEL;
     }
-    
-    
-    public ArrayList<GameBlock> getBlockMap(){
+
+    public ArrayList<GameBlock> getBlockMap() {
         return map_blocks;
     }
-    
-    public void addBlock(GameBlock bl){
+
+    public void addBlock(GameBlock bl) {
         map_blocks.add(bl);
     }
-    
-    /**searches backward and removes a 'count' number of GameBlock types
+
+    /**
+     * searches backward and removes a 'count' number of GameBlock types
      * equivalent to bl
-     * 
-     * @param bl 
+     *
+     * @param bl
      */
-    public void removeBlock(GameBlock bl, int count){
+    public void removeBlock(GameBlock bl, int count) {
         Collections.reverse(map_blocks);//so we remove from the back
         int i = 0;
-        for(int j = 0; j < map_blocks.size();j++){
-            if(bl.getClass() == map_blocks.get(j).getClass()){
+        for (int j = 0; j < map_blocks.size(); j++) {
+            if (bl.getClass() == map_blocks.get(j).getClass()) {
                 map_blocks.remove(j);
                 i++;
-                if(i <= count){
+                if (i <= count) {
                     break;
                 }
             }
         }
         Collections.reverse(map_blocks);//so everything is in correct order
     }
-    
-    public ArrayList<GameBlock> getSlice(int x0, int x1){
+
+    public ArrayList<GameBlock> getSlice(int x0, int x1) {
         ArrayList<GameBlock> slice = new ArrayList<GameBlock>();
-        for(int i = 0; i < x1 - x0; i++){
-            slice.add(map_blocks.get(x0+i));
+        for (int i = 0; i < x1 - x0; i++) {
+            slice.add(map_blocks.get(x0 + i));
         }
         return slice;
     }
-    
+
     private nsLevel(int width, int height, long seed, int difficulty, int type, GamePlay playerMetrics) {
         super(width, height);
-        
-        if(DEBUG){
+
+        if (DEBUG) {
             System.out.println("nsLevel");
-              }
-        
+        }
+
         map_blocks = new ArrayList<GameBlock>();
-        
+
         this.seed = seed;
         this.difficulty = difficulty;
         this.difficulty_history.add(difficulty);
-        
+
         this.type = type;
-        
+
         this.playerN = playerMetrics;
         oddsObj = new ElementOdds(playerN);
-        
-       random = new Random(seed);
+
+        random = new Random(seed);
     }
-    
+
     public void creat() {
-        
-                
-        create(seed,difficulty,type);
+
+
+        create(seed, difficulty, type);
     }
+
     public void create(long seed, int difficulty, int type) {
 
         //
 
-        oddsObj.odds.put(ElementOdds.ODDS_E.STRAIGHT, 30);
-        oddsObj.odds.put(ElementOdds.ODDS_E.HILL_STRAIGHT, 20);
-        oddsObj.odds.put(ElementOdds.ODDS_E.TUBES, 2+2*difficulty);
-        int jumpDifficulty = 1;
-        // adapt the game so that it has a number of gaps proportional to the
-        //number of jumps the player made in the test level. The more the jumps,
-        //the more the gaps.
-        if (playerN.jumpsNumber > oddsObj.JumpingThreshold)
-            jumpDifficulty = 2;
-        oddsObj.odds.put(ElementOdds.ODDS_E.JUMP, jumpDifficulty);;
-        oddsObj.odds.put(ElementOdds.ODDS_E.CANNONS, 10 + 5 * difficulty);
-        oddsObj.odds.put(ElementOdds.ODDS_E.CANNON_ARRAY, 5 * difficulty);
-        oddsObj.odds.put(ElementOdds.ODDS_E.CAVE, 50 * difficulty);
+        //SCALE ODDS
+        oddsObj.scaleOdds(maxDifficulty);
 
-        if (type != LevelInterface.TYPE_OVERGROUND) {
-            oddsObj.odds.put(ElementOdds.ODDS_E.HILL_STRAIGHT, 0);
-        }
-        
+//       if (type != LevelInterface.TYPE_OVERGROUND) {
+//            oddsObj.odds.put(ElementOdds.ODDS_E.HILL_STRAIGHT, 0);
+//        }
+
         int length = 0;
-        
+
         //Creating and adding blocks/ elements
         //build map_blocks
         //can adjust difficulty of all blocks
-        
-        BuildZone prefab = new BuildZone(this,length,getWidth(), difficulty);
-        
+
+        BuildZone prefab = new BuildZone(this, length, getWidth(), difficulty);
+
         map_blocks.add(prefab.buildOpener());
-        
+
         length += map_blocks.get(0).getLength();//random SAFE start
-        
+
         //create all middle sections      
-        while(length < getWidth() - 64){
+        while (length < getWidth() - 64) {
             //choose next block and it's difficulty
-            int nextDiff = decideBlockDifficulty(maxDifficulty);
-            GameBlock next = decideBlock(length,getWidth()-length, nextDiff);
-            if(next == null){
+            int nextDiff = decideBlockDifficulty();
+            GameBlock next = decideBlock(length, getWidth() - length / 10, nextDiff);
+            if (next == null) {
                 continue;
             }
             int param = decideType(next);
-            
+
             //add to block map, check for playability in here
             Add(next);
             //update length
-            length+= next.Add(param);
+            length += next.Add(param);
         }
-        
+
         prefab.buildEndExit(length);
-        
+
         //creates the ceiling in castles, underground
         if (type == LevelInterface.TYPE_CASTLE || type == LevelInterface.TYPE_UNDERGROUND) {
             int ceiling = 0;
@@ -210,116 +199,119 @@ public class nsLevel extends RandomLevel implements GameBlock{
 
     }
 
-    public int decideType(GameBlock bl){
+    public int decideType(GameBlock bl) {
         //return random type
         //do something with difficulty... have higher type ## correspond to more difficult
         //build specs
         int ty = 0;
-        
-        if(bl != null && bl.getTypes() != null){
-            
-            ty = bl.getTypes().get(random.nextInt(bl.getTypes().size()));
+
+        if (bl != null && bl.getTypes() != null) {
+            if (bl.getTypes().size() == 1) {
+                ty = 0;
+            } else {
+                ty = bl.getTypes().get(random.nextInt(bl.getTypes().size()));
+            }
         }
-        
+
         return ty;
     }
-    
-    public GameBlock decideBlock(int origin, int length, int difficult){
+
+    public GameBlock decideBlock(int origin, int length, int difficult) {
         GameBlock next = new BuildZone();
-                
+
         int pick = random.nextInt(oddsObj.totalOdds);
-        
-        if(pick < oddsObj.bounds.get(ODDS_E.STRAIGHT)){
-                next = new Straight(this, origin, length, difficult);
-        }
-        else if(pick < oddsObj.bounds.get(ODDS_E.HILL_STRAIGHT)){
+
+        if (pick < oddsObj.bounds.get(ODDS_E.STRAIGHT)) {
+            next = new Straight(this, origin, length, difficult);
+        } else if (pick < oddsObj.bounds.get(ODDS_E.HILL_STRAIGHT)) {
             next = new Hill(this, origin, length, difficult);
-        }
-        else if(pick < oddsObj.bounds.get(ODDS_E.TUBES)){
-                next = new Tube(this, origin, length, difficult);
-        }
-        else if(pick < oddsObj.bounds.get(ODDS_E.JUMP)){
-                next = new Jump(this, origin, length, difficult);
-        }
-        else if(pick < oddsObj.bounds.get(ODDS_E.CANNONS)){
+        } else if (pick < oddsObj.bounds.get(ODDS_E.TUBES)) {
+            next = new Tube(this, origin, length, difficult);
+        } else if (pick < oddsObj.bounds.get(ODDS_E.JUMP)) {
+            next = new Jump(this, origin, length, difficult);
+        } else if (pick < oddsObj.bounds.get(ODDS_E.CANNONS)) {
             next = new Cannon(this, origin, length, difficult);
-        }
-        else  if(pick < oddsObj.bounds.get(ODDS_E.CAVE)){
-                next = new Cave(this, origin, length, difficult);
-        }
-        else if(pick < oddsObj.bounds.get(ODDS_E.CANNON_ARRAY)){
+        } else if (pick < oddsObj.bounds.get(ODDS_E.CANNON_ARRAY)) {
             next = new CannonArray(this, origin, length, difficult);
+        } else if (pick < oddsObj.bounds.get(ODDS_E.CAVE)) {
+            next = new Cave(this, origin, length, difficult);
         }
-        
+
+
         return next;
     }
-    
-    public int decideBlockDifficulty(int maxDiff){
+
+    public int decideBlockDifficulty() {
+        if(difficulty < 1){
+            difficulty = 1;
+        }
+        
         int diff = difficulty;
         
-        int change =random.nextInt(2);
-        
-        if(change == 0){
+        int change = random.nextInt(2);
+
+        if (change == 0) {
             diff += random.nextInt(diff);
-        }
-        else if (change == 1){
+        } else if (change == 1) {
             diff -= random.nextInt(diff);
         }
-        
-        if(diff > maxDiff){
+
+        if (diff > maxDifficulty) {
             diff = 10;
-        }
-        else if(diff < 1){
+        } else if (diff < 1) {
             diff = 1;
         }
-        
+
         return diff;
     }
-    
-    public int getDifficulty(){
+
+    public int getDifficulty() {
         return difficulty;
     }
-    public void setDifficulty(int set){
+
+    public void setDifficulty(int set) {
         difficulty_history.add(set);
-        
+
         difficulty = set;
     }
-    
-   public ArrayList<Integer> getDifficultyHistory(){
+
+    public ArrayList<Integer> getDifficultyHistory() {
         return difficulty_history;
     }
-    
-    public byte getGround(){
+
+    public byte getGround() {
         return Level.GROUND;
     }
-    
-    public void setXExit(int x){
+
+    public void setXExit(int x) {
         xExit = x;
     }
-    
-    public void setYExit(int y){
+
+    public void setYExit(int y) {
         yExit = y;
     }
-    
-    public int getXExit(){
+
+    public int getXExit() {
         return xExit;
     }
-    
-    public int getYExit(){
+
+    public int getYExit() {
         return yExit;
     }
-    
+
     public int buildJump(int xo, int maxLength, int diff) {
-        if (xo < 10) return 0;
-        
+        if (xo < 10) {
+            return buildStraight(xo, maxLength, true, diff);
+        }
+
         gaps++;
         //jl: jump length
         //js: the number of blocks that are available at either side for free
-        int js = random.nextInt(diff) + 2;
-        int jl = random.nextInt(diff) + 2;
+        int js = random.nextInt(4) + 2;
+        int jl = random.nextInt(2) + 2;
         int length = js * 2 + jl;
 
-        boolean hasStairs = random.nextInt(3) == 0;
+        boolean hasStairs = random.nextInt(2) == 0;
 
         int floor = height - 1 - random.nextInt(4);
         //run for the from the start x position, for the whole length
@@ -329,8 +321,7 @@ public class nsLevel extends RandomLevel implements GameBlock{
                 for (int y = 0; y < height; y++) { //paint ground up until the floor
                     if (y >= floor) {
                         setBlock(x, y, GROUND);
-                    }
-                    //if it is above ground, start making stairs of rocks
+                    } //if it is above ground, start making stairs of rocks
                     else if (hasStairs) { //LEFT SIDE
                         if (x < xo + js) { //we need to max it out and level because it wont
                             //paint ground correctly unless two bricks are side by side
@@ -351,10 +342,14 @@ public class nsLevel extends RandomLevel implements GameBlock{
     }
 
     public int buildCannons(int xo, int maxLength, int diff) {
-        if (xo < 10) return 0;
-        
-        int length = random.nextInt(diff) + 2;
-        if (length > maxLength) length = maxLength;
+        if (xo < 10) {
+            return buildStraight(xo, maxLength, true, diff);
+        }
+
+        int length = random.nextInt(10) + 2;
+        if (length > maxLength) {
+            length = maxLength;
+        }
 
         int floor = height - 1 - random.nextInt(4);
         int xCannon = xo + 1 + random.nextInt(4);
@@ -362,7 +357,9 @@ public class nsLevel extends RandomLevel implements GameBlock{
             if (x > xCannon) {
                 xCannon += 2 + random.nextInt(4);
             }
-            if (xCannon == xo + length - 1) xCannon += 10;
+            if (xCannon == xo + length - 1) {
+                xCannon += 10;
+            }
             int cannonHeight = floor - random.nextInt(4) - 1;
 
             for (int y = 0; y < height; y++) {
@@ -384,45 +381,55 @@ public class nsLevel extends RandomLevel implements GameBlock{
 
         return length;
     }
-    
+
     public int buildCannonArray(int xo, int maxLength, int diff) {
-        if (xo < 10) return 0;
-        
+        if (xo < 10) {
+            return buildStraight(xo, maxLength, true, diff);
+        }
+
         int length = random.nextInt(diff) + 6;
-        if (length > maxLength) length = maxLength;
-        
+        if (length > maxLength) {
+            length = maxLength;
+        }
+
         int floor = height - 1 - random.nextInt(4);
         int xCannon = xo + 1 + random.nextInt(4);
         for (int x = xo; x < xo + length; x++) {
-            if (x > xCannon)
+            if (x > xCannon) {
                 xCannon += 2 + random.nextInt(4);
-            if (xCannon == xo + length - 1) xCannon += 10;
+            }
+            if (xCannon == xo + length - 1) {
+                xCannon += 10;
+            }
             int cannonHeight = floor - random.nextInt(4) - 1;
-            
+
             for (int y = 0; y < height; y++) {
                 if (y >= floor) {
                     setBlock(x, y, (byte) 145);
                 } else if (x == xCannon) {
-                    if (y == cannonHeight)
+                    if (y == cannonHeight) {
                         setBlock(x, y, (byte) 14);
-                    else if (y >= cannonHeight)
+                    } else if (y >= cannonHeight) {
                         setBlock(x, y, (byte) 14);
+                    }
                 }
             }
         }
-        
+
         return length;
     }
-    
+
     public int buildHillStraight(int xo, int maxLength, int diff) {
-        int length = random.nextInt(diff) + 10;
-        if (length > maxLength) length = maxLength;
+        int length = random.nextInt(diff / 4) + 10;
+        if (length > maxLength) {
+            length = maxLength;
+        }
 
         int floor = height - 1 - random.nextInt(4);
         for (int x = xo; x < xo + length; x++) {
             for (int y = 0; y < height; y++) {
                 if (y >= floor) {
-                    setBlock(x, y,Level.GROUND);
+                    setBlock(x, y, Level.GROUND);
                 }
             }
         }
@@ -443,32 +450,40 @@ public class nsLevel extends RandomLevel implements GameBlock{
                 int l = random.nextInt(5) + 3;
                 int xxo = random.nextInt(length - l - 2) + xo + 1;
 
-                if (occupied[xxo - xo] || occupied[xxo - xo + l] ||
-                    occupied[xxo - xo - 1] || occupied[xxo - xo + l + 1]) {
+                if (occupied[xxo - xo] || occupied[xxo - xo + l]
+                        || occupied[xxo - xo - 1] || occupied[xxo - xo + l + 1]) {
                     keepGoing = false;
                 } else {
                     occupied[xxo - xo] = true;
                     occupied[xxo - xo + l] = true;
                     addEnemyLine(xxo, xxo + l, h - 1);
-                    if (random.nextInt(4) == 0) {
+                    if (random.nextInt(diff / 10) == 1) {
                         decorate(xxo - 1, xxo + l + 1, h);
                         keepGoing = false;
                     }
                     for (int x = xxo; x < xxo + l; x++) {
                         for (int y = h; y < floor; y++) {
                             int xx = 5;
-                            if (x == xxo) xx = 4;
-                            if (x == xxo + l - 1) xx = 6;
+                            if (x == xxo) {
+                                xx = 4;
+                            }
+                            if (x == xxo + l - 1) {
+                                xx = 6;
+                            }
                             int yy = 9;
-                            if (y == h) yy = 8;
+                            if (y == h) {
+                                yy = 8;
+                            }
 
                             if (getBlock(x, y) == 0) {
                                 setBlock(x, y, (byte) (xx + yy * 16));
                             } else {
-                                if (getBlock(x, y) == Level.HILL_TOP_LEFT)
+                                if (getBlock(x, y) == Level.HILL_TOP_LEFT) {
                                     setBlock(x, y, Level.HILL_TOP_LEFT_IN);
-                                if (getBlock(x, y) == Level.HILL_TOP_RIGHT)
+                                }
+                                if (getBlock(x, y) == Level.HILL_TOP_RIGHT) {
                                     setBlock(x, y, Level.HILL_TOP_RIGHT_IN);
+                                }
                             }
                         }
                     }
@@ -480,45 +495,47 @@ public class nsLevel extends RandomLevel implements GameBlock{
     }
 
     public void addEnemyLine(int x0, int x1, int y) {
-        if (x0 < 10) return;
-        
+        if (x0 < 10) {
+            return;
+        }
+
         for (int x = x0; x < x1; x++) {
             if (random.nextInt(50) < difficulty) {
-                int type = random.nextInt(4);
+                int type_e = random.nextInt(4);
 
-                    type = random.nextInt(3);
                 if (turtles < Constraints.turtels) {
-                    if (type == Enemy.ENEMY_GREEN_KOOPA || type == Enemy.ENEMY_RED_KOOPA) {
+                    if (type_e == Enemy.ENEMY_GREEN_KOOPA || type_e == Enemy.ENEMY_RED_KOOPA) {
                         turtles++;
                         setSpriteTemplate(x, y,
-                                          new SpriteTemplate(type,
+                                new SpriteTemplate(type_e,
                                 random.nextInt(35) < difficulty));
                     } else {
                         setSpriteTemplate(x, y,
-                                          new SpriteTemplate(type,
+                                new SpriteTemplate(type_e,
                                 random.nextInt(35) < difficulty));
                     }
-                }
-                else{
-                	setSpriteTemplate(x, y,
+                } else {
+                    setSpriteTemplate(x, y,
                             new SpriteTemplate(Enemy.ENEMY_GOOMBA,
-                  random.nextInt(35) < difficulty));
+                            random.nextInt(35) < difficulty));
                 }
             }
         }
     }
 
-    /**difficulty adjusts length and tube height
-     * 
+    /**
+     * difficulty adjusts length and tube height
+     *
      * @param xo
      * @param maxLength
      * @param diff
-     * @return 
+     * @return
      */
-    
     public int buildTubes(int xo, int maxLength, int diff) {
         int length = random.nextInt(diff) + 5;
-        if (length > maxLength) length = maxLength;
+        if (length > maxLength) {
+            length = maxLength;
+        }
 
         int floor = height - 1 - random.nextInt(4);
         int xTube = xo + 1 + random.nextInt(4);
@@ -528,11 +545,13 @@ public class nsLevel extends RandomLevel implements GameBlock{
                 xTube += 3 + random.nextInt(4);
                 tubeHeight = floor - random.nextInt(2) - 2;
             }
-            if (xTube >= xo + length - 2) xTube += 10;
+            if (xTube >= xo + length - 2) {
+                xTube += 10;
+            }
 
             if (x > 5 && x == xTube && random.nextInt(11) < difficulty + 1) {
                 setSpriteTemplate(x, tubeHeight,
-                                  new SpriteTemplate(Enemy.ENEMY_FLOWER, false));
+                        new SpriteTemplate(Enemy.ENEMY_FLOWER, false));
             }
 
             for (int y = 0; y < height; y++) {
@@ -557,56 +576,65 @@ public class nsLevel extends RandomLevel implements GameBlock{
 
         return length;
     }
-    
+
     public int buildCave(int xo, int maxLength, int diff) {
-        if (maxLength < 15) return 0;
+        if (maxLength < 15) {
+            return 0;
+        }
         int length = Math.min(maxLength, random.nextInt(diff) + 15);
-        
+
         int floor = height - 1 - random.nextInt(4);
-        
+
         buildStraight(xo, 4, height, floor - 4, true);
         buildStraight(xo + 4, 6, height, floor, true);
         buildStraight(xo + 10, length - 12, height, floor - 4, true);
         buildStraight(xo + length - 2, 2, height - 2, floor - 4, true);
-        
+
         setBlock(xo + 10, floor - 1, BLOCK_EMPTY);
         setBlock(xo + 10, floor - 2, BLOCK_EMPTY);
         setBlock(xo + 11, floor - 1, COIN);
         setBlock(xo + 11, floor - 2, COIN);
-        
-        for (int x = xo + 12; x < xo + length - 2; x++)
-            for (int y = floor - 2; y < height - 1; y++)
+
+        for (int x = xo + 12; x < xo + length - 2; x++) {
+            for (int y = floor - 2; y < height - 1; y++) {
                 setBlock(x, y, COIN);
-        
+            }
+        }
+
         setSpriteTemplate(xo + 10, floor - 5, new SpriteTemplate(Enemy.ENEMY_RED_KOOPA, false));
-        
+
         return length;
     }
 
     public int buildStraight(int xo, int maxLength, boolean safe, int diff) {
         int length = safe ? random.nextInt(diff) + random.nextInt(diff) : random.nextInt(diff) + 2;
-        if (length > maxLength)
+        if (length > maxLength) {
             length = maxLength;
-        
+        }
+
         return buildStraight(xo, length, height, height - 1 - random.nextInt(4), safe);
     }
-    
+
     public int buildStraight(int xo, int length, int bottom, int floor, boolean safe) {
         //runs from the specified x position to the length of the segment
-        for (int x = xo; x < xo + length; x++)
-            for (int y = floor; y < bottom; y++)
+        for (int x = xo; x < xo + length; x++) {
+            for (int y = floor; y < bottom; y++) {
                 setBlock(x, y, Level.GROUND);
-        if (!safe && length > 5)
+            }
+        }
+        if (!safe && length > 5) {
             decorate(xo, xo + length, floor);
+        }
 
         return length;
     }
-    
+
     //look into changing this function
     public void decorate(int xStart, int xLength, int floor) {
         //if its at the very top, just return
-        if (floor < 1)
+        if (floor < 1) {
             return;
+        }
         boolean rocks = true;
 
         //add an enemy line above the box
@@ -630,16 +658,15 @@ public class nsLevel extends RandomLevel implements GameBlock{
             if ((xLength - 1 - e) - (xStart + 1 + s) > 2) {
                 for (int x = xStart + 1 + s; x < xLength - 1 - e; x++) {
                     if (rocks) {
-                        if (x != xStart + 1 && x != xLength - 2 &&
-                            random.nextInt(2) == 0) {
+                        if (x != xStart + 1 && x != xLength - 2
+                                && random.nextInt(2) == 0) {
                             if (random.nextInt(2) == 0) {
                                 setBlock(x, floor - 4, BLOCK_POWERUP);
                             } else {
-                                if(coins < Constraints.coinBlocks){
+                                if (coins < Constraints.coinBlocks) {
                                     coins++;
                                     setBlock(x, floor - 4, BLOCK_COIN);
-                                }
-                                else{
+                                } else {
                                     setBlock(x, floor - 4, BLOCK_EMPTY);
                                 }
                             }
@@ -678,7 +705,7 @@ public class nsLevel extends RandomLevel implements GameBlock{
     }
 
     public void blockify(Level level, boolean[][] blocks, int width,
-                          int height) {
+            int height) {
         int to = 0;
         if (type == LevelInterface.TYPE_CASTLE) {
             to = 4 * 2;
@@ -694,10 +721,18 @@ public class nsLevel extends RandomLevel implements GameBlock{
                     for (int yy = y; yy <= y + 1; yy++) {
                         int _xx = xx;
                         int _yy = yy;
-                        if (_xx < 0) _xx = 0;
-                        if (_yy < 0) _yy = 0;
-                        if (_xx > width - 1) _xx = width - 1;
-                        if (_yy > height - 1) _yy = height - 1;
+                        if (_xx < 0) {
+                            _xx = 0;
+                        }
+                        if (_yy < 0) {
+                            _yy = 0;
+                        }
+                        if (_xx > width - 1) {
+                            _xx = width - 1;
+                        }
+                        if (_yy > height - 1) {
+                            _yy = height - 1;
+                        }
                         b[xx - x][yy - y] = blocks[_xx][_yy];
                     }
                 }
@@ -766,28 +801,31 @@ public class nsLevel extends RandomLevel implements GameBlock{
             }
         }
     }
-    
-     public int getLength(){
+
+    public int getLength() {
         int total = 0;
-        for(GameBlock bl : map_blocks){
+        for (GameBlock bl : map_blocks) {
             total += bl.getLength();
-       }
+        }
         return total;
     }
-    
-    public int getComponentsCount(){
+
+    public int getComponentsCount() {
         return map_blocks.size();
     }
-    
-    /**Adds to the end of the block map
-     * 
-     * @param bl 
+
+    /**
+     * Adds to the end of the block map
+     *
+     * @param bl
      */
-    public void Add(GameBlock bl){
-        if(DEBUG) System.out.println("Added Block " + bl.toString());
-        map_blocks.add(map_blocks.size()-1,bl); 
+    public void Add(GameBlock bl) {
+        if (DEBUG) {
+            System.out.println("Added Block " + bl.toString());
+        }
+        map_blocks.add(map_blocks.size() - 1, bl);
     }
-    
+
     @Override
     public Class identifyBlock(int type) {
         return this.getClass();
@@ -812,8 +850,4 @@ public class nsLevel extends RandomLevel implements GameBlock{
     public ArrayList<Integer> getTypes() {
         return null;
     }
-
-
-
-
 }

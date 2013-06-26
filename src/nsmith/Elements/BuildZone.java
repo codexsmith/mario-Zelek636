@@ -91,7 +91,7 @@ public class BuildZone implements GameBlock{
     }
     
     public Straight buildOpener(){
-        Straight opener = new Straight(nsLevel.LEVEL,0, possiblelength, zoneDifficulty);
+        Straight opener = new Straight(nsLevel.LEVEL,0, possiblelength, 1);
         opener.buildOpening();//could change this int type to an enum?
         return opener;
     }

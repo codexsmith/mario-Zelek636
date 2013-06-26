@@ -336,13 +336,8 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 		    }
 
 		    public void toCustomGame(){
-                        
+                        //we don't use this difficulty
 		    	randomLevel = new bzLevelTest(graphicsConfiguration,this,new Random().nextLong(),0,0,true);
-
-		    	Mario.fire = false;
-		    	Mario.large = false;
-		    	Mario.coins = 0;
-		    	Mario.lives = 3;
 
 		    	randomLevel.init();
 		    	randomLevel.setSound(sound);

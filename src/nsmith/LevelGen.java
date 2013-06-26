@@ -51,8 +51,13 @@ public class LevelGen extends CustomizedLevelGenerator {
         readLabeledSet();
         
         seed = new Random().nextLong();
+        //THIS IS OUR DIFFICULTY
         int difficulty = calculateDifficulty(playerMetrics);
-
+        
+        if(difficulty <= 0){
+            difficulty = 1;
+        }
+        
         if (nsLevel.createNsLevel(320, 15, seed, difficulty, 0, playerMetrics)) {
             nsLevel.LEVEL.creat();
             level = nsLevel.getLEVEL();

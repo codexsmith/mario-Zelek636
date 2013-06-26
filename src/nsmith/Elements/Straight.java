@@ -52,7 +52,7 @@ public class Straight implements GameBlock{
     }
     //random safe/unsafe opening, can add type here to add more functionality
     public int buildOpening(){
-        return nsLevel.LEVEL.buildStraight(0, 30, random.nextInt(blockDifficulty) == 1 ? true : false, blockDifficulty);
+        return nsLevel.LEVEL.buildStraight(0, nsLevel.LEVEL.getWidth(), random.nextInt(5) == 1 ? true : false, blockDifficulty);
     }
     
     @Override

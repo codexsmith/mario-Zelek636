@@ -1,4 +1,5 @@
 package nsmith;
+
 import dk.itu.mario.MarioInterface.GamePlay;
 import dk.itu.mario.engine.Art;
 import dk.itu.mario.engine.BgRenderer;
@@ -26,225 +27,264 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Random;
 
+public class bzLevelTest extends LevelSceneTest {
 
-	public class bzLevelTest extends LevelSceneTest{
+    ArrayList<Double> switchPoints;
+    private double thresshold; //how large the distance from point to mario should be before switching
+    private int point = -1;
+    private int[] checkPoints;
+    private boolean isCustom;
+    LevelGen clg;
+    GamePlay gp;
 
-			ArrayList<Double> switchPoints;
-			private double thresshold; //how large the distance from point to mario should be before switching
-			private int point = -1;
-			private int []checkPoints;
-			private boolean isCustom;
-                        LevelGen clg;
+    public bzLevelTest(GraphicsConfiguration graphicsConfiguration,
+            MarioComponent renderer, long seed, int levelDifficulty, int type, boolean isCustom) {
+        super(graphicsConfiguration, renderer, seed, levelDifficulty, type, isCustom);
+        this.isCustom = isCustom;
+    }
 
-			public bzLevelTest(GraphicsConfiguration graphicsConfiguration,
-					MarioComponent renderer, long seed, int levelDifficulty, int type,boolean isCustom){
-				super(graphicsConfiguration,renderer,seed,levelDifficulty,type,isCustom);
-				this.isCustom = isCustom;
-			}
+    public void resetLevel() {
+        clg = new LevelGen();
+        gp = new GamePlay();
+        gp = gp.read("player.txt");
+        currentLevel = (Level) clg.generateLevel(gp);
+        
+        
+        
+    }
 
-			public void init() {
-		        try
-		        {
-		            Level.loadBehaviors(new DataInputStream(ResourcesManager.class.getResourceAsStream("res/tiles.dat")));
-		        }
-		        catch (IOException e)
-		        {
-		            e.printStackTrace();
-		            System.exit(0);
-		        }
+    public void init() {
+        try {
+            Level.loadBehaviors(new DataInputStream(ResourcesManager.class.getResourceAsStream("res/tiles.dat")));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(0);
+        }
 
-		        if(level==null){
-                            clg = new LevelGen();
-		        		GamePlay gp = new GamePlay();
-		        		gp = gp.read("player.txt");
-		        		currentLevel = (Level)clg.generateLevel(gp);
-		        		
-		        		//You can use the following commands if you want to benefit from
-		        		//	the interface containing detailed information
-		        		String detailedInfo = FileHandler.readFile("DetailedInfo.txt");
-		                
-                        }
-		        try {
-					 level = currentLevel.clone();
-				} catch (CloneNotSupportedException e) {
-					e.printStackTrace();
-				}
+        if (level == null) {
+            clg = new LevelGen();
+            gp = new GamePlay();
+            gp = gp.read("player.txt");
+            currentLevel = (Level) clg.generateLevel(gp);
 
-		        //level is always overground
-		        Art.startMusic(1);
+            //You can use the following commands if you want to benefit from
+            //	the interface containing detailed information
+            String detailedInfo = FileHandler.readFile("DetailedInfo.txt");
 
-		        paused = false;
-		        Sprite.spriteContext = this;
-		        sprites.clear();
+        }
+        try {
+            level = currentLevel.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
 
-		        layer = new LevelRenderer(level, graphicsConfiguration, 320, 240);
-		        for (int i = 0; i < 2; i++)
-		        {
-		            int scrollSpeed = 4 >> i;
-		            int w = ((level.getWidth() * 16) - 320) / scrollSpeed + 320;
-		            int h = ((level.getHeight() * 16) - 240) / scrollSpeed + 240;
-		            Level bgLevel = BgLevelGenerator.createLevel(w / 32 + 1, h / 32 + 1, i == 0, levelType);
-		            bgLayer[i] = new BgRenderer(bgLevel, graphicsConfiguration, 320, 240, scrollSpeed);
-		        }
+        //level is always overground
+        Art.startMusic(1);
 
-		        double oldX = 0;
-		        if(mario!=null)
-		        	oldX = mario.x;
+        paused = false;
+        Sprite.spriteContext = this;
+        sprites.clear();
 
-		        mario = new Mario(this);
-		        sprites.add(mario);
-		        startTime = 1;
+        layer = new LevelRenderer(level, graphicsConfiguration, 320, 240);
+        for (int i = 0; i < 2; i++) {
+            int scrollSpeed = 4 >> i;
+            int w = ((level.getWidth() * 16) - 320) / scrollSpeed + 320;
+            int h = ((level.getHeight() * 16) - 240) / scrollSpeed + 240;
+            Level bgLevel = BgLevelGenerator.createLevel(w / 32 + 1, h / 32 + 1, i == 0, levelType);
+            bgLayer[i] = new BgRenderer(bgLevel, graphicsConfiguration, 320, 240, scrollSpeed);
+        }
 
-		        timeLeft = 200*15;
+        double oldX = 0;
+        if (mario != null) {
+            oldX = mario.x;
+        }
 
-		        tick = 0;
+        mario = new Mario(this);
+        sprites.add(mario);
+        startTime = 1;
 
-		        /*
-		         * SETS UP ALL OF THE CHECKPOINTS TO CHECK FOR SWITCHING
-		         */
-		        switchPoints = new ArrayList<Double>();
+        timeLeft = 200 * 15;
 
-		        //first pick a random starting waypoint from among ten positions
-		    	int squareSize = 16; //size of one square in pixels
-		        int sections = 10;
+        tick = 0;
 
-		    	double startX = 32; //mario start position
-		    	double endX = level.getxExit()*squareSize; //position of the end on the level
-		    	if(!isCustom && recorder==null)
-		    		recorder = new DataRecorder(this,(RandomLevel)level,keys);
+        /*
+         * SETS UP ALL OF THE CHECKPOINTS TO CHECK FOR SWITCHING
+         */
+        switchPoints = new ArrayList<Double>();
 
-		        gameStarted = false;
-			}
+        //first pick a random starting waypoint from among ten positions
+        int squareSize = 16; //size of one square in pixels
+        int sections = 10;
+
+        double startX = 32; //mario start position
+        double endX = level.getxExit() * squareSize; //position of the end on the level
+        if (!isCustom && recorder == null) {
+            recorder = new DataRecorder(this, (RandomLevel) level, keys);
+        }
+
+        gameStarted = false;
+    }
+
+    public void tick() {
+        super.tick();
+
+        if (recorder != null && !gameStarted) {
+            recorder.startLittleRecord();
+            recorder.startTime();
+            gameStarted = true;
+        }
+        if (recorder != null) {
+            recorder.tickRecord();
+        }
+    }
+
+    public void winActions() {
+        if (recorder != null) {
+            recorder.fillGamePlayMetrics((RandomLevel) level);
+        }
+
+        clg.surveyFeedBack();
+
+        marioComponent.win();
+    }
+
+    public void deathActions() {
+        if (Mario.lives <= 0) {//has no more lives
+            if (recorder != null) {
+                recorder.fillGamePlayMetrics((RandomLevel) level);
+            }
+
+            clg.surveyFeedBack();
+
+            marioComponent.lose();
+        } else { // mario still has lives to play :)--> have a new beginning
+
+            boolean newLevel = clg.resetFeedBack();
+
+            if (newLevel) {
+                clg.surveyFeedBack();
+                init();
+            } else {
+                reset();
+            }
+        }
+    }
+
+    public void bump(int x, int y, boolean canBreakBricks) {
+        byte block = level.getBlock(x, y);
+
+        if ((Level.TILE_BEHAVIORS[block & 0xff] & Level.BIT_BUMPABLE) > 0) {
+            bumpInto(x, y - 1);
+            level.setBlock(x, y, (byte) 4);
+
+            if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_SPECIAL) > 0) {
+                sound.play(Art.samples[Art.SAMPLE_ITEM_SPROUT], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
+                if (!Mario.large) {
+                    addSprite(new Mushroom(this, x * 16 + 8, y * 16 + 8));
+                } else {
+                    addSprite(new FireFlower(this, x * 16 + 8, y * 16 + 8));
+                }
+
+                if (recorder != null) {
+                    recorder.blockPowerDestroyRecord();
+                }
+            } else {
+                //TODO should only record hidden coins (in boxes)
+                if (recorder != null) {
+                    recorder.blockCoinDestroyRecord();
+                }
+
+                Mario.getCoin();
+                sound.play(Art.samples[Art.SAMPLE_GET_COIN], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
+                addSprite(new CoinAnim(x, y));
+            }
+        }
+
+        if ((Level.TILE_BEHAVIORS[block & 0xff] & Level.BIT_BREAKABLE) > 0) {
+            bumpInto(x, y - 1);
+            if (canBreakBricks) {
+                if (recorder != null) {
+                    recorder.blockEmptyDestroyRecord();
+                }
+
+                sound.play(Art.samples[Art.SAMPLE_BREAK_BLOCK], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
+                level.setBlock(x, y, (byte) 0);
+                for (int xx = 0; xx < 2; xx++) {
+                    for (int yy = 0; yy < 2; yy++) {
+                        addSprite(new Particle(x * 16 + xx * 8 + 4, y * 16 + yy * 8 + 4, (xx * 2 - 1) * 4, (yy * 2 - 1) * 4 - 8));
+                    }
+                }
+            }
+
+        }
+    }
+
+    protected void reset() {
+        paused = false;
+        Sprite.spriteContext = this;
+        sprites.clear();
+
+        try {
+            level = currentLevel.clone();
+        } catch (CloneNotSupportedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        level.resetSpriteTemplate();
+
+        layer = new LevelRenderer(level, graphicsConfiguration, 320, 240);
+
+        double oldX = 0;
+
+        if (mario != null) {
+            oldX = mario.x;
+        }
+
+        mario = new Mario(this);
+        sprites.add(mario);
+        startTime = 1;
+
+        timeLeft = 200 * 15;
+        Art.startMusic(1);
+        tick = 0;
+//        recorder = new DataRecorder(this,level,keys,gametype);
+//        recorder.detailedLog = "";
+        gameStarted = false;
+    }
+
+    public void bumpInto(int x, int y) {
+        byte block = level.getBlock(x, y);
+        if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_PICKUPABLE) > 0) {
+            Mario.getCoin();
+            sound.play(Art.samples[Art.SAMPLE_GET_COIN], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
+            level.setBlock(x, y, (byte) 0);
+            addSprite(new CoinAnim(x, y + 1));
 
 
+            //TODO no idea when this happens... maybe remove coin count
+            if (recorder != null) {
+                recorder.recordCoin();
+            }
+        }
 
-			public void tick(){
-				super.tick();
+        for (Sprite sprite : sprites) {
+            sprite.bumpCheck(x, y);
+        }
+    }
 
-				if(recorder != null && !gameStarted){
-					recorder.startLittleRecord();
-					recorder.startTime();
-					gameStarted = true;
-				}
-				if(recorder != null)
-				recorder.tickRecord();
-			}
+    private int randomNumber(int low, int high) {
+        return new Random(new Random().nextLong()).nextInt(high - low) + low;
+    }
 
-			public void winActions(){
-				if(recorder != null)
-				recorder.fillGamePlayMetrics((RandomLevel)level);
-				
-                                clg.surveyFeedBack();
-                                                                
-                                marioComponent.win();
-			}
+    private int toBlock(float n) {
+        return (int) (n / 16);
+    }
 
-			public void deathActions(){
-				if(Mario.lives <=0){//has no more lives
-					if(recorder != null)
-					recorder.fillGamePlayMetrics((RandomLevel)level);
-                                        
-                                        clg.surveyFeedBack();
-                                        
-					marioComponent.lose();
-				}
-				else // mario still has lives to play :)--> have a new beginning
-					reset();
-			}
+    private int toBlock(double n) {
+        return (int) (n / 16);
+    }
 
-			public void bump(int x, int y, boolean canBreakBricks)
-		    {
-		        byte block = level.getBlock(x, y);
-
-		        if ((Level.TILE_BEHAVIORS[block & 0xff] & Level.BIT_BUMPABLE) > 0)
-		        {
-		            bumpInto(x, y - 1);
-		            level.setBlock(x, y, (byte) 4);
-
-		            if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_SPECIAL) > 0)
-		            {
-		                sound.play(Art.samples[Art.SAMPLE_ITEM_SPROUT], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
-		                if (!Mario.large)
-		                {
-		                    addSprite(new Mushroom(this, x * 16 + 8, y * 16 + 8));
-		                }
-		                else
-		                {
-		                    addSprite(new FireFlower(this, x * 16 + 8, y * 16 + 8));
-		                }
-
-		                if(recorder != null){
-		                	recorder.blockPowerDestroyRecord();
-		                }
-		            }
-		            else
-		            {
-		            	//TODO should only record hidden coins (in boxes)
-		            	if(recorder != null){
-		            		recorder.blockCoinDestroyRecord();
-		            	}
-
-		                Mario.getCoin();
-		                sound.play(Art.samples[Art.SAMPLE_GET_COIN], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
-		                addSprite(new CoinAnim(x, y));
-		            }
-		        }
-
-		        if ((Level.TILE_BEHAVIORS[block & 0xff] & Level.BIT_BREAKABLE) > 0)
-		        {
-		            bumpInto(x, y - 1);
-		            if (canBreakBricks)
-		            {
-		            	if(recorder != null){
-		            		recorder.blockEmptyDestroyRecord();
-		            	}
-
-		                sound.play(Art.samples[Art.SAMPLE_BREAK_BLOCK], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
-		                level.setBlock(x, y, (byte) 0);
-		                for (int xx = 0; xx < 2; xx++)
-		                    for (int yy = 0; yy < 2; yy++)
-		                        addSprite(new Particle(x * 16 + xx * 8 + 4, y * 16 + yy * 8 + 4, (xx * 2 - 1) * 4, (yy * 2 - 1) * 4 - 8));
-		            }
-
-		        }
-		    }
-
-			 public void bumpInto(int x, int y)
-			    {
-			        byte block = level.getBlock(x, y);
-			        if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_PICKUPABLE) > 0)
-			        {
-			            Mario.getCoin();
-			            sound.play(Art.samples[Art.SAMPLE_GET_COIN], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
-			            level.setBlock(x, y, (byte) 0);
-			            addSprite(new CoinAnim(x, y + 1));
-
-
-			            //TODO no idea when this happens... maybe remove coin count
-			            if(recorder != null)
-			            	recorder.recordCoin();
-			        }
-
-			        for (Sprite sprite : sprites)
-			        {
-			            sprite.bumpCheck(x, y);
-			        }
-			    }
-
-			private int randomNumber(int low, int high){
-				return new Random(new Random().nextLong()).nextInt(high-low)+low;
-			}
-
-			private int toBlock(float n){
-				return (int)(n/16);
-			}
-
-			private int toBlock(double n){
-				return (int)(n/16);
-			}
-
-			private float toReal(int b){
-				return b*16;
-			}
+    private float toReal(int b) {
+        return b * 16;
+    }
 }
-

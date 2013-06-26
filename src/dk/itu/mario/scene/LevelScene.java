@@ -456,7 +456,9 @@ public class LevelScene extends Scene implements SpriteContext
     public void deathActions(){
 
     }
-
+    
+    
+    
     protected void reset(){
 		paused = false;
         Sprite.spriteContext = this;

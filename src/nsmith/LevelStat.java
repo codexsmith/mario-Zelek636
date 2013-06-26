@@ -12,6 +12,9 @@ import java.util.Random;
  * or other data describing it
  *
  * Implements a Map of Long to ArrayList that permits duplicate keys
+ *
+ * jOption return values
+ * 0 is Yes : 1 is No
  * 
  * @author nix
  */

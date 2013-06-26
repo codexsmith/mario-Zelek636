@@ -180,4 +180,22 @@ public class LevelGen extends CustomizedLevelGenerator {
         
         return difficulty < 1 ? 1 : difficulty;
     }
+
+    public boolean resetFeedBack() {
+        Object[] options = {"Yes","No"};
+        
+        int val = JOptionPane.showOptionDialog(null,
+                "Do you want a new level to play?","Playable",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                options[0]);
+        if (val == 1){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
 }

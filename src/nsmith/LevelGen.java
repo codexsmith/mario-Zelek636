@@ -4,26 +4,20 @@ import dk.itu.mario.MarioInterface.GamePlay;
 import dk.itu.mario.MarioInterface.LevelInterface;
 import dk.itu.mario.level.generator.CustomizedLevelGenerator;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author nix
+/**Contains the level stats file IO, the questionnaire, seeds, and interacts with nsLevel
+ * calculates the player's difficulty
+ *Call stack bzLevelTest -> this -> nsLevel
+ * @author Nicholas Smith
  */
 public class LevelGen extends CustomizedLevelGenerator {
     
@@ -56,6 +50,7 @@ public class LevelGen extends CustomizedLevelGenerator {
 //        -4364097651690792009
 //        -3732855959174562952
 //        -4201392615275519362
+        
         //THIS IS OUR DIFFICULTY
         int difficulty = calculateDifficulty(playerMetrics);
         

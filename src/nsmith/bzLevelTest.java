@@ -27,6 +27,11 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Random;
 
+/**Creates the LevelGenerator, interacts with the gamePlay object, and calls the questionnaires on win/death
+ * Call stack MarioComponent -> this -> LevelGen
+ * @author Nicholas Smith
+ */
+
 public class bzLevelTest extends LevelSceneTest {
 
     ArrayList<Double> switchPoints;

@@ -5,7 +5,6 @@ import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
-import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -16,10 +15,8 @@ import dk.itu.mario.engine.DataRecorder;
 import dk.itu.mario.engine.LevelRenderer;
 import dk.itu.mario.engine.MarioComponent;
 import dk.itu.mario.level.Level;
-import dk.itu.mario.level.RandomLevel;
 
 import dk.itu.mario.engine.sonar.FixedSoundSource;
-import dk.itu.mario.engine.sprites.*;
 import dk.itu.mario.engine.sprites.BulletBill;
 import dk.itu.mario.engine.sprites.CoinAnim;
 import dk.itu.mario.engine.sprites.FireFlower;

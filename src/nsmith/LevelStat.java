@@ -13,7 +13,7 @@ import java.util.Random;
  *
  * Implements a Map of Long to ArrayList that permits duplicate keys
  *
- * jOption return values
+ * jOption return values written to file in LevelGen
  * 0 is Yes : 1 is No
  * 
  * @author nix

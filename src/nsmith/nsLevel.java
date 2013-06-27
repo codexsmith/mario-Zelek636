@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package nsmith;
 
 import dk.itu.mario.MarioInterface.Constraints;
@@ -11,7 +7,6 @@ import dk.itu.mario.engine.sprites.Enemy;
 import dk.itu.mario.engine.sprites.SpriteTemplate;
 import dk.itu.mario.level.Level;
 import dk.itu.mario.level.RandomLevel;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
@@ -19,8 +14,9 @@ import nsmith.ElementOdds.ODDS_E;
 import nsmith.Elements.*;
 
 /**
- * Starting with copy of CustomizedLevel. nsLevel is called from nsmith.LevelGen
- *
+ * Starting with copy of CustomizedLevel. nsLevel is called from 
+ * Call stack LevelGen -> this 
+ * Uses ElementOdds
  * @author Nicholas Smith
  */
 public class nsLevel extends RandomLevel implements GameBlock {
@@ -43,6 +39,7 @@ public class nsLevel extends RandomLevel implements GameBlock {
     private ArrayList<GameBlock> map_blocks;
     public static nsLevel LEVEL = null;//singleton
 
+    
     public static boolean createNsLevel(int width, int height, long seed, int difficulty, int type, GamePlay playerMetrics) {
         if (LEVEL == null) {
             
@@ -272,9 +269,9 @@ public class nsLevel extends RandomLevel implements GameBlock {
 
         if (change == 0) {
             
-            diff += random.nextInt(diff+maxDifficulty/10 + 10);
+            diff += random.nextInt(maxDifficulty/10 + random.nextInt(diff));
         } else if (change == 1) {
-            diff -= random.nextInt(diff+maxDifficulty/10);
+            diff -= random.nextInt(random.nextInt(diff)+maxDifficulty/10);
         }
 
         diff = Math.abs(diff);
@@ -468,7 +465,8 @@ public class nsLevel extends RandomLevel implements GameBlock {
                 }
             }
         }
-        if(random.nextInt(oddsObj.enemyScale - difficulty/10) == 1){
+        
+        if(random.nextInt(maxDifficulty) < oddsObj.enemyScale * ((float)difficulty)/10.0f){
             addEnemyLine(xo + 1, xo + length - 1, floor -1 );
         }
         int h = floor;
@@ -491,10 +489,10 @@ public class nsLevel extends RandomLevel implements GameBlock {
                 } else {
                     occupied[xxo - xo] = true;
                     occupied[xxo - xo + l] = true;
-                    if(random.nextInt(oddsObj.enemyScale - difficulty/10) == 1){
+                    if(random.nextInt(maxDifficulty) > oddsObj.enemyScale * ((float)difficulty)/10.0f){
                         addEnemyLine(xxo, xxo + l, h-1);
                     }
-                    if (random.nextInt(oddsObj.enemyScale - difficulty/10) == 1) {
+                    if (random.nextInt(maxDifficulty) > oddsObj.decorateScale * ((float)difficulty)/10.0f) {
                         decorate(xxo - 1, xxo + l + 1, h);
                         keepGoing = false;
                     }
@@ -774,7 +772,7 @@ public class nsLevel extends RandomLevel implements GameBlock {
         // Enemies & powerups
         int center = (start + end) / 2;
         int enemyCountDown = center;
-        while (random.nextInt(30) < difficulty && enemyCountDown > start)
+        while (random.nextInt(maxDifficulty) < difficulty && enemyCountDown > start)
             addEnemy(enemyCountDown--, floor - 1);
         if (enemyCountDown < center) {
             setBlock (center, floor - 4, BLOCK_POWERUP);
@@ -832,7 +830,7 @@ public class nsLevel extends RandomLevel implements GameBlock {
         boolean rocks = true;
 
         //add an enemy line above the box
-        if(random.nextInt(oddsObj.decorateScale - difficulty/10) == 1){
+        if(random.nextInt(maxDifficulty) > oddsObj.enemyScale * ((float)difficulty)/10.0f){
         addEnemyLine(xStart + 1, xLength - 1, floor-1);
         }
         int s = random.nextInt(4);

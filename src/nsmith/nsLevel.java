@@ -26,7 +26,7 @@ import nsmith.Elements.*;
 public class nsLevel extends RandomLevel implements GameBlock {
 
     Random random;
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
     ElementOdds oddsObj;
     protected ArrayList<Integer> difficulty_history = new ArrayList<Integer>();
     protected int difficulty;
@@ -225,7 +225,6 @@ public class nsLevel extends RandomLevel implements GameBlock {
         
         while(next.getClass() == BuildZone.class){
         int pick = random.nextInt(oddsObj.totalOdds+1);
-        
         if(DEBUG){
             System.out.println("PICK "+ pick);
         }
@@ -267,9 +266,9 @@ public class nsLevel extends RandomLevel implements GameBlock {
 
         if (change == 0) {
             
-            diff += random.nextInt((diff)+maxDifficulty/10);
+            diff += random.nextInt(diff+maxDifficulty/10 + 10);
         } else if (change == 1) {
-            diff -= random.nextInt((diff)+maxDifficulty/10);
+            diff -= random.nextInt(diff+maxDifficulty/10);
         }
 
         diff = Math.abs(diff);
@@ -277,7 +276,9 @@ public class nsLevel extends RandomLevel implements GameBlock {
         if (diff > maxDifficulty) {
             diff = maxDifficulty;
         }
-        
+        else if(diff < 1){
+            diff = 1;
+        }
         if(DEBUG){
             System.out.println("Difficulty Change: From -> To");
             System.out.println(difficulty + " -> " +diff);
@@ -300,6 +301,7 @@ public class nsLevel extends RandomLevel implements GameBlock {
     }
 
     public ArrayList<Integer> getDifficultyHistory() {
+        
         return difficulty_history;
     }
 
@@ -460,7 +462,7 @@ public class nsLevel extends RandomLevel implements GameBlock {
                 }
             }
         }
-        if(random.nextInt(difficulty/oddsObj.enemyScale + 1) == 1){
+        if(random.nextInt(oddsObj.enemyScale - difficulty/10) == 1){
             addEnemyLine(xo + 1, xo + length - 1, floor -1 );
         }
         int h = floor;
@@ -483,10 +485,10 @@ public class nsLevel extends RandomLevel implements GameBlock {
                 } else {
                     occupied[xxo - xo] = true;
                     occupied[xxo - xo + l] = true;
-                    if(random.nextInt(oddsObj.enemyScale) == 1){
+                    if(random.nextInt(oddsObj.enemyScale - difficulty/10) == 1){
                         addEnemyLine(xxo, xxo + l, h-1);
                     }
-                    if (random.nextInt(difficulty/oddsObj.decorateScale + 1) == 1) {
+                    if (random.nextInt(oddsObj.enemyScale - difficulty/10) == 1) {
                         decorate(xxo - 1, xxo + l + 1, h);
                         keepGoing = false;
                     }
@@ -681,7 +683,7 @@ public class nsLevel extends RandomLevel implements GameBlock {
         boolean rocks = true;
 
         //add an enemy line above the box
-        if(random.nextInt(difficulty/oddsObj.decorateScale + 1) == 1){
+        if(random.nextInt(oddsObj.decorateScale - difficulty/10) == 1){
         addEnemyLine(xStart + 1, xLength - 1, floor-1);
         }
         int s = random.nextInt(4);
